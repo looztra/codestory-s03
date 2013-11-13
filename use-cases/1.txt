@@ -1,0 +1,13 @@
+127.0.0.1 - - [13/Nov/2013:21:06:45 +0000] "GET /reset?lowerFloor=0&higherFloor=19&cabinSize=11&cause=player+has+requested+a+reset HTTP/1.1" 200 0 2 2
+127.0.0.1 - - [13/Nov/2013:21:06:49 +0000] "GET /nextCommand HTTP/1.1" 200 2 3 3
+127.0.0.1 - - [13/Nov/2013:21:06:49 +0000] "GET /call?atFloor=3&to=UP HTTP/1.1" 200 0 2 2
+127.0.0.1 - - [13/Nov/2013:21:06:50 +0000] "GET /call?atFloor=4&to=DOWN HTTP/1.1" 200 0 3 3
+127.0.0.1 - - [13/Nov/2013:21:06:50 +0000] "GET /nextCommand HTTP/1.1" 200 2 3 3
+127.0.0.1 - - [13/Nov/2013:21:06:51 +0000] "GET /call?atFloor=0&to=UP HTTP/1.1" 200 0 2 2
+127.0.0.1 - - [13/Nov/2013:21:06:51 +0000] "GET /nextCommand HTTP/1.1" 200 2 2 2
+127.0.0.1 - - [13/Nov/2013:21:06:52 +0000] "GET /call?atFloor=16&to=UP HTTP/1.1" 200 0 2 2
+127.0.0.1 - - [13/Nov/2013:21:06:52 +0000] "GET /nextCommand HTTP/1.1" 200 4 4 4
+127.0.0.1 - - [13/Nov/2013:21:06:52 +0000] "GET /userHasEntered HTTP/1.1" 200 0 2 2
+127.0.0.1 - - [13/Nov/2013:21:06:52 +0000] "GET /go?floorToGo=19 HTTP/1.1" 200 0 2 2
+127.0.0.1 - - [13/Nov/2013:21:06:53 +0000] "GET /call?atFloor=0&to=UP HTTP/1.1" 200 0 3 3
+127.0.0.1 - - [13/Nov/2013:21:06:53 +0000] "GET /nextCommand HTTP/1.1" 200 5 3 3

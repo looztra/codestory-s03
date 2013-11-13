@@ -296,12 +296,6 @@ public class S03E01W2Elevator implements ElevatorEngine {
     @VisibleForTesting
     protected void openTheDoor() {
         log.info("openTheDoor");
-        if (userWaitingAtCurrentFloor()) {
-            clearWaitingListForCurrentFloor();
-        }
-        if (userInsideElevatorNeedToGetOut()) {
-            clearStopListForCurrentFloor();
-        }
         List<User> doneUsers = new ArrayList<>();
         for (User user : users) {
             user.elevatorIsOpen(currentFloor.get());
@@ -309,15 +303,8 @@ public class S03E01W2Elevator implements ElevatorEngine {
                 doneUsers.add(user);
             }
         }
+        log.info("openTheDoor(before) users.size(): <{}>, doneUsers.size(): <{}>", users.size(), doneUsers.size());
         users.removeAll(doneUsers);
-    }
-
-    @VisibleForTesting
-    protected void clearStopListForCurrentFloor() {
-    }
-
-    @VisibleForTesting
-    protected void clearWaitingListForCurrentFloor() {
     }
 
     @VisibleForTesting
@@ -511,11 +498,6 @@ public class S03E01W2Elevator implements ElevatorEngine {
         boolean stopRequested = false;
         synchronized (users) {
             for (User user : users) {
-                try {
-                    log.info("stopRequestedAt({}): user <{}>", floor, MAPPER.writeValueAsString(user));
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
                 if (user.traveling() && user.requestedAStop() && user.getFloorToGo() == floor) {
                     stopRequested = true;
                 }
@@ -535,6 +517,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
     protected String logWaitingListContent() {
         Multimap<Integer, User> waitByFloor = ArrayListMultimap.create();
         for (User user : users) {
+            // log.info("logWaitingListContent(): dealing with user {}", user.toString());
             if (user.waiting()) {
                 waitByFloor.put(user.getInitialFloor(), user);
             }
@@ -580,14 +563,15 @@ public class S03E01W2Elevator implements ElevatorEngine {
 
 
         S03E01W2Elevator.log.info("logCurrentState(from:{}): tick <{}>, floor: <{}>, previousFloor: <{}>," +
-                " middleFloor: <{}>, nbOfPassengers <{}>, previousCommand <{}>, " +
+                " middleFloor: <{}>, nbOfPassengers <{}>, totalUsers <{}>, previousCommand <{}>, " +
                 "currentDirection <{}>, someoneIsWaitingAtLowerLevels <{}>, someoneIsWaitingAtUpperLevels<{}>," +
                 " userWaitingAtCurrentFloor<{}>, userInsideElevatorNeedToGetOut<{}>, currentDoorStatus <{}>," +
                 " waitingList <{}>, stopList <{}>, lastCommands <{}>, consistency <{}>",
                 from, ticks.get(), currentFloor, previousFloor, middleFloor, currentNbOfUsersInsideTheElevator,
-                previousCommand, currentDirection, someoneIsWaitingAtLowerLevels(), someoneIsWaitingAtUpperLevels(),
-                userWaitingAtCurrentFloor(), userInsideElevatorNeedToGetOut(), currentDoorStatus,
-                logWaitingListContent(), logRequestedStops(), lastCommandsAsString(), stateIsInconsistent());
+                users.size(), previousCommand, currentDirection, someoneIsWaitingAtLowerLevels(),
+                someoneIsWaitingAtUpperLevels(), userWaitingAtCurrentFloor(), userInsideElevatorNeedToGetOut(),
+                currentDoorStatus, logWaitingListContent(), logRequestedStops(), lastCommandsAsString(),
+                stateIsInconsistent());
     }
 
     @VisibleForTesting

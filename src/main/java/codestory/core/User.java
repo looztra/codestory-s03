@@ -5,7 +5,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
 
-@Data()
+@Data
 public class User {
 
     public static final Integer UNSET = Integer.MIN_VALUE;
@@ -27,7 +27,7 @@ public class User {
     }
 
     public void elevatorIsOpen(Integer floor) throws ElevatorIsBrokenException {
-        if (waiting() && at(floor)) {
+        if (waiting() && at(floor) && elevatorIsAtWaitingFloor(floor)) {
             state = State.TRAVELLING;
         } else if (traveling() && at(floorToGo)) {
             state = State.DONE;

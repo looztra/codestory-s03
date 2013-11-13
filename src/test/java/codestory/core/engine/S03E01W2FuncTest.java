@@ -1,8 +1,11 @@
 package codestory.core.engine;
 
+import codestory.core.Command;
 import codestory.core.Direction;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static codestory.core.engine.assertions.Assertions.assertThat;
 
@@ -98,5 +101,60 @@ public class S03E01W2FuncTest {
         ;
     }
 
+//    127.0.0.1 - - [13/Nov/2013:21:06:45 +0000] "GET /reset?lowerFloor=0&higherFloor=19&cabinSize=11&cause=player+has+requested+a+reset HTTP/1.1" 200 0 2 2
+//    127.0.0.1 - - [13/Nov/2013:21:06:49 +0000] "GET /nextCommand HTTP/1.1" 200 2 3 3
+//    127.0.0.1 - - [13/Nov/2013:21:06:49 +0000] "GET /call?atFloor=3&to=UP HTTP/1.1" 200 0 2 2
+//    127.0.0.1 - - [13/Nov/2013:21:06:50 +0000] "GET /call?atFloor=4&to=DOWN HTTP/1.1" 200 0 3 3
+//    127.0.0.1 - - [13/Nov/2013:21:06:50 +0000] "GET /nextCommand HTTP/1.1" 200 2 3 3
+//    127.0.0.1 - - [13/Nov/2013:21:06:51 +0000] "GET /call?atFloor=0&to=UP HTTP/1.1" 200 0 2 2
+//    127.0.0.1 - - [13/Nov/2013:21:06:51 +0000] "GET /nextCommand HTTP/1.1" 200 2 2 2
+//    127.0.0.1 - - [13/Nov/2013:21:06:52 +0000] "GET /call?atFloor=16&to=UP HTTP/1.1" 200 0 2 2
+//    127.0.0.1 - - [13/Nov/2013:21:06:52 +0000] "GET /nextCommand HTTP/1.1" 200 4 4 4
+//    127.0.0.1 - - [13/Nov/2013:21:06:52 +0000] "GET /userHasEntered HTTP/1.1" 200 0 2 2
+//    127.0.0.1 - - [13/Nov/2013:21:06:52 +0000] "GET /go?floorToGo=19 HTTP/1.1" 200 0 2 2
+//    127.0.0.1 - - [13/Nov/2013:21:06:53 +0000] "GET /call?atFloor=0&to=UP HTTP/1.1" 200 0 3 3
+//    127.0.0.1 - - [13/Nov/2013:21:06:53 +0000] "GET /nextCommand HTTP/1.1" 200 5 3 3
+    @Test
+    public void complexe_scenario_1() {
+        ///reset?lowerFloor=0&higherFloor=19&cabinSize=11&cause=player+has+requested+a+reset
+        elevator.reset("complexe_scenario_1", 0, 19, 11);
+        //nextCommand
+        org.fest.assertions.Assertions.assertThat(elevator.nextCommand()).isEqualTo(Command.UP);
+        org.fest.assertions.Assertions.assertThat(elevator.getCurrentFloor().get()).isEqualTo(1);
+        elevator.call(3, Direction.UP);
+        org.fest.assertions.Assertions.assertThat(elevator.someoneIsWaitingAtUpperLevels()).isTrue();
+        org.fest.assertions.Assertions.assertThat(elevator.getUsers()).hasSize(1);
+        elevator.call(4, Direction.DOWN);
+        org.fest.assertions.Assertions.assertThat(elevator.someoneIsWaitingAtUpperLevels()).isTrue();
+        org.fest.assertions.Assertions.assertThat(elevator.getUsers()).hasSize(2);
+        org.fest.assertions.Assertions.assertThat(elevator.getCurrentNbOfUsersInsideTheElevator().get()).isEqualTo(0);
+        //nextCommand
+        org.fest.assertions.Assertions.assertThat(elevator.nextCommand()).isEqualTo(Command.UP);
+        org.fest.assertions.Assertions.assertThat(elevator.getCurrentFloor().get()).isEqualTo(2);
+        elevator.call(0, Direction.UP);
+        org.fest.assertions.Assertions.assertThat(elevator.someoneIsWaitingAtUpperLevels()).isTrue();
+        org.fest.assertions.Assertions.assertThat(elevator.someoneIsWaitingAtLowerLevels()).isTrue();
+        org.fest.assertions.Assertions.assertThat(elevator.getUsers()).hasSize(3);
+        org.fest.assertions.Assertions.assertThat(elevator.getCurrentNbOfUsersInsideTheElevator().get()).isEqualTo(0);
+        //nextCommand
+        org.fest.assertions.Assertions.assertThat(elevator.nextCommand()).isEqualTo(Command.UP);
+        org.fest.assertions.Assertions.assertThat(elevator.getCurrentFloor().get()).isEqualTo(3);
+        elevator.call(16, Direction.UP);
+        org.fest.assertions.Assertions.assertThat(elevator.someoneIsWaitingAtUpperLevels()).isTrue();
+        org.fest.assertions.Assertions.assertThat(elevator.someoneIsWaitingAtLowerLevels()).isTrue();
+        org.fest.assertions.Assertions.assertThat(elevator.getUsers()).hasSize(4);
+        org.fest.assertions.Assertions.assertThat(elevator.getCurrentNbOfUsersInsideTheElevator().get()).isEqualTo(0);
+        //nextCommand
+        org.fest.assertions.Assertions.assertThat(elevator.nextCommand()).isEqualTo(Command.OPEN);
+        org.fest.assertions.Assertions.assertThat(elevator.getCurrentFloor().get()).isEqualTo(3);
+        elevator.userHasEntered(null);
+        elevator.go(19);
+        org.fest.assertions.Assertions.assertThat(elevator.someoneIsWaitingAtUpperLevels()).isTrue();
+        org.fest.assertions.Assertions.assertThat(elevator.someoneIsWaitingAtLowerLevels()).isTrue();
+        org.fest.assertions.Assertions.assertThat(elevator.getUsers()).hasSize(4);
+        org.fest.assertions.Assertions.assertThat(elevator.getCurrentNbOfUsersInsideTheElevator().get()).isEqualTo(1);
+
+
+    }
 }
 

@@ -613,6 +613,44 @@ public class S03E01W2ElevatorTest {
 
     }
 
+    @Test
+    public void openTheDoor_should_clear_already_done_users() {
+        User done1 = new User(3,Direction.DOWN);
+        done1.setCurrentFloor(0);
+        done1.go(2);
+        done1.setState(User.State.DONE);
+        User w1 = new User(1, Direction.UP);
+        w1.setCurrentFloor(0);
+        User s1 = new User(5, Direction.DOWN);
+        s1.go(1);
+        s1.setCurrentFloor(0);
+        users.add(done1);
+        users.add(w1);
+        users.add(s1);
+        assertThat(users.size()).isEqualTo(3);
+        elevator.openTheDoor();
+        assertThat(users.size()).isEqualTo(2);
+        assertThat(users.contains(done1)).isFalse();
+
+    }
+
+    @Test
+    public void openTheDoor_should_clear_new_done_users() {
+
+        User w1 = new User(1, Direction.UP);
+        w1.setCurrentFloor(1);
+        User s1 = new User(5, Direction.DOWN);
+        s1.go(1);
+        s1.setCurrentFloor(1);
+        s1.setState(User.State.TRAVELLING);
+        users.add(w1);
+        users.add(s1);
+        assertThat(users.size()).isEqualTo(2);
+        elevator.openTheDoor();
+        assertThat(users.size()).isEqualTo(1);
+
+    }
+
     // DATAPROVIDERS
     @DataProvider(name = "providerFor_previousCommand_is_not_CLOSE")
     public Object[][] providerFor_justClosedTheDoor_should_be_false() {
