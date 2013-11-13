@@ -1,8 +1,8 @@
 package codestory.resources;
 
-import com.google.inject.Inject;
 import codestory.core.Direction;
 import codestory.core.engine.ElevatorEngine;
+import com.google.inject.Inject;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -22,6 +22,11 @@ public class ElevatorResource {
     @Inject
     public ElevatorResource(ElevatorEngine engine) {
         this.elevatorEngine = engine;
+    }
+
+    @GET
+    public String getState() {
+        return elevatorEngine.getState();
     }
 
     @Path("call")

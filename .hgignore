@@ -16,3 +16,4 @@ syntax: regexp
 .*iml
 dependency-reduced-pom.xml
 .gradle
+.git

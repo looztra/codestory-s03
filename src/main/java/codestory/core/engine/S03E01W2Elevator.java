@@ -1,9 +1,6 @@
 package codestory.core.engine;
 
-import codestory.core.Command;
-import codestory.core.Direction;
-import codestory.core.Door;
-import codestory.core.User;
+import codestory.core.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
@@ -177,6 +174,38 @@ public class S03E01W2Elevator implements ElevatorEngine {
         return this;
     }
 
+    public String getState() {
+        String jsonState = "UNDEF";
+        ElevatorContext context = ElevatorContext.builder()
+                .source("getState")
+                .tick(ticks.get())
+                .lowerFloor(lowerFloor)
+                .higherFloor(higherFloor)
+                .currentFloor(currentFloor.get())
+                .previousFloor(previousFloor.get())
+                .middleFloor(middleFloor)
+                .currentNbOfUsersInsideTheElevator(currentNbOfUsersInsideTheElevator.get())
+                .previousCommand(previousCommand)
+                .currentDirection(currentDirection)
+                .someoneIsWaitingAtLowerLevels(someoneIsWaitingAtLowerLevels())
+                .someoneIsWaitingAtUpperLevels(someoneIsWaitingAtUpperLevels())
+                .someoneRequestedAStopAtLowerLevels(someoneRequestedAStopAtLowerLevels())
+                .someoneRequestedAStopAtUpperLevels(someoneRequestedAStopAtUpperLevels())
+                .userWaitingAtCurrentFloor(userWaitingAtCurrentFloor())
+                .userInsideElevatorNeedToGetOut(userInsideElevatorNeedToGetOut())
+                .currentDoorStatus(currentDoorStatus)
+                .lastCommands(lastCommands)
+                .users(users)
+                .build();
+
+        try {
+            jsonState = MAPPER.writeValueAsString(context);
+        } catch (JsonProcessingException e) {
+            log.error("could not process context to json for tick <{}>", ticks.get(), e);
+        }
+        return jsonState;
+    }
+
     @VisibleForTesting
     protected void updateUserState() {
         synchronized (users) {
@@ -194,6 +223,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
             }
         }
     }
+
     @VisibleForTesting
     protected void registerNewUser(User user) {
         synchronized (users) {
@@ -482,7 +512,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
         synchronized (users) {
             for (User user : users) {
                 try {
-                    log.info("stopRequestedAt({}): user <{}>",floor,MAPPER.writeValueAsString(user));
+                    log.info("stopRequestedAt({}): user <{}>", floor, MAPPER.writeValueAsString(user));
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
@@ -547,33 +577,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
 
     @VisibleForTesting
     protected void logCurrentState(String from) {
-//        ElevatorContext context = ElevatorContext.builder()
-//                .source(from)
-//                .tick(ticks.get())
-//                .currentFloor(currentFloor.get())
-//                .previousFloor(previousFloor.get())
-//                .middleFloor(middleFloor)
-//                .currentNbOfUsersInsideTheElevator(currentNbOfUsersInsideTheElevator.get())
-//                .previousCommand(previousCommand)
-//                .currentDirection(currentDirection)
-//                .someoneIsWaitingAtLowerLevels(someoneIsWaitingAtLowerLevels(currentFloor.get()))
-//                .someoneIsWaitingAtUpperLevels(someoneIsWaitingAtUpperLevels(currentFloor.get()))
-//                .someoneRequestedAStopAtLowerLevels(someoneRequestedAStopAtLowerLevels(currentFloor.get()))
-//                .someoneRequestedAStopAtUpperLevels(someoneRequestedAStopAtUpperLevels(currentFloor.get()))
-//                .userWaitingAtCurrentFloor(userWaitingAtCurrentFloor())
-//                .userInsideElevatorNeedToGetOut(userInsideElevatorNeedToGetOut())
-//                .currentDoorStatus(currentDoorStatus)
-//                .waitingList(userWaitingByFloor)
-//                .stopList(stopRequestedByFloor)
-//                .lastCommands(lastCommands)
-//                .build();
-//
-//        try {
-//            log.info(MAPPER.writeValueAsString(context));
-//        } catch (JsonProcessingException e) {
-//            log.error("could not process context to json for tick <{}>", ticks.get(), e);
-//        }
-//
+
 
         S03E01W2Elevator.log.info("logCurrentState(from:{}): tick <{}>, floor: <{}>, previousFloor: <{}>," +
                 " middleFloor: <{}>, nbOfPassengers <{}>, previousCommand <{}>, " +

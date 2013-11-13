@@ -4,6 +4,7 @@ import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.experimental.Builder;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,6 +17,8 @@ import java.util.Map;
 public class ElevatorContext {
     private final String source;
     private final int tick;
+    private final int lowerFloor;
+    private final int higherFloor;
     private final int currentFloor;
     private final int previousFloor;
     private final int middleFloor;
@@ -30,9 +33,9 @@ public class ElevatorContext {
     private final boolean userWaitingAtCurrentFloor;
     private final boolean userInsideElevatorNeedToGetOut;
     private final Door currentDoorStatus;
-    private final Multimap<Integer,Direction> waitingList;
-    private final Multimap<Integer,Direction> stopList;
     private final Map<Integer, String> lastCommands;
+    private final List<User> users;
+
 
 
 }

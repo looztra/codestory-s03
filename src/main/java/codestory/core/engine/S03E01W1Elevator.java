@@ -9,7 +9,6 @@ import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import codestory.core.engine.ElevatorEngine;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -181,6 +180,10 @@ public class S03E01W1Elevator implements ElevatorEngine {
         }*/
 //        logCurrentState("userHasExited(" + user + ")-after");
         return this;
+    }
+
+    public String getState() {
+        return "not implemented";
     }
 
     @VisibleForTesting

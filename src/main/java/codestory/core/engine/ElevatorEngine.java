@@ -28,4 +28,6 @@ public interface ElevatorEngine {
 
     public Integer getHigherFloor();
 
+    public String getState();
+
 }
