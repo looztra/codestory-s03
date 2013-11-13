@@ -1,10 +1,13 @@
 package codestory.core;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
-class Score {
+public class Score {
 
     Integer score;
 
@@ -22,7 +25,7 @@ class Score {
         return this;
     }
 
-    private Integer score(User user) throws IllegalStateException {
+    public static Integer score(User user) throws IllegalStateException {
         if (user.getTickToWait() < 1) {
             throw new IllegalStateException("when done, user have to wait at least one tick");
         }
@@ -37,7 +40,7 @@ class Score {
         return min(max(0, score), 20);
     }
 
-    private Integer bestTickToGo(Integer floor, Integer floorToGo) {
+    public static Integer bestTickToGo(Integer floor, Integer floorToGo) {
         // elevator is OPEN at floor
         final Integer elevatorHasToCloseDoorsWhenAtFloor = 1;
         final Integer elevatorGoesStraightFromFloorToFloorToGo = abs(floorToGo - floor);
@@ -63,5 +66,8 @@ class Score {
         return score;
     }
 
+    public int getScore() {
+        return score;
+    }
 }
 

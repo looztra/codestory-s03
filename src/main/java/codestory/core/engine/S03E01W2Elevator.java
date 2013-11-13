@@ -36,6 +36,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
     public static final int DEFAULT_LOWER_FLOOR = 0;
     public static final int DEFAULT_HIGHER_FLOOR = 5;
     public static final int DEFAULT_CABIN_SIZE = 30;
+    private Score score;
     protected Map<Integer, String> lastCommands = initLastCommandQueue();
     private AtomicInteger ticks = new AtomicInteger(0);
     @Getter
@@ -72,6 +73,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
                     cause, lowerFloor, higherFloor, cabinSize);
             logCurrentState("reset, cause:" + cause);
         }
+        score = new Score();
         lastCommands = initLastCommandQueue();
         this.lowerFloor = lowerFloor;
         this.higherFloor = higherFloor;
@@ -178,6 +180,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
         String jsonState = "UNDEF";
         ElevatorContext context = ElevatorContext.builder()
                 .source("getState")
+                .score(score)
                 .tick(ticks.get())
                 .lowerFloor(lowerFloor)
                 .higherFloor(higherFloor)
@@ -300,10 +303,12 @@ public class S03E01W2Elevator implements ElevatorEngine {
         for (User user : users) {
             user.elevatorIsOpen(currentFloor.get());
             if (user.done()) {
+                score = score.success(user);
+                log.info("openTheDoor(): score for user <{}> is <{}>, totalScore is <{}>", user, Score.score(user),
+                        score.getScore());
                 doneUsers.add(user);
             }
         }
-        log.info("openTheDoor(before) users.size(): <{}>, doneUsers.size(): <{}>", users.size(), doneUsers.size());
         users.removeAll(doneUsers);
     }
 
