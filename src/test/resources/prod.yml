@@ -1,0 +1,23 @@
+# Logging settings.
+logging:
+
+  # The default level of all loggers. Can be OFF, ERROR, WARN, INFO, DEBUG, TRACE, or ALL.
+  level: INFO
+  # Settings for logging to a file.
+  file:
+    enabled: true
+    threshold: ALL
+    currentLogFilename: /MIDDLE/devlab722/codestory.devlab722.net/dropwizard/logs/dropwizard.log
+    archivedLogFilenamePattern: /MIDDLE/devlab722/codestory.devlab722.net/dropwizard/logs/archives/dropwizard.%d.log.gz
+    archivedFileCount: 5
+    timeZone: UTC
+
+http:
+  port: 8090
+  adminPort: 8091
+  requestLog:
+    file:
+      enabled: true
+      currentLogFilename: /MIDDLE/devlab722/codestory.devlab722.net/dropwizard/logs/access.log
+      archivedLogFilenamePattern: /MIDDLE/devlab722/codestory.devlab722.net/dropwizard/logs/archives/access.%d.log.gz
+      archivedFileCount: 5

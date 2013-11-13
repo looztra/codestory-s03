@@ -1,0 +1,16 @@
+.classpath
+.project
+.settings/
+
+META-INF/
+target/
+
+.idea
+*.iml
+
+.hg/
+*.gz
+dependency-reduced-pom.xml
+build/
+.gradle/
+optimisations.txt

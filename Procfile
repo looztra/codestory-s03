@@ -1,0 +1,1 @@
+web: java $JAVA_OPTS -Ddw.http.port=$PORT -Ddw.http.adminPort=$PORT -jar target/codestory-s03-1.0.0-SNAPSHOT.jar server src/test/resources/heroku.yml

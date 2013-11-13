@@ -1,0 +1,22 @@
+---
+- hosts: codestory-s03-eu.devlab722.net
+  vars:
+    middle_root: /MIDDLE
+    client_root: "{{middle_root}}/devlab722"
+    app_root: "{{client_root}}/codestory.devlab722.net"
+    dw_root: "{{app_root}}/dropwizard"
+    jar_file: codestory-s03-1.0.0-SNAPSHOT.jar
+  tasks:
+  - name: copy jar to remote dest
+    copy: src=../target/{{jar_file}} dest={{dw_root}}/fatjars/{{jar_file}} backup=yes owner=www group=server
+    tags:
+    - deploy
+  - name: copy config to remote
+    copy: src=../src/test/resources/prod.yml dest={{dw_root}}/conf/prod.yml backup=yes owner=www group=server
+    tags:
+    - deploy
+  - name: restart service
+    command: /bin/sh {{dw_root}}/my_restart.sh
+    tags:
+    - restart
+

@@ -1,0 +1,98 @@
+---
+- hosts: codestory-s03-eu.devlab722.net
+  vars:
+    middle_root: /MIDDLE
+    client_root: "{{middle_root}}/devlab722"
+    app_root: "{{client_root}}/codestory.devlab722.net"
+    dw_root: "{{app_root}}/dropwizard"
+  tasks:
+  - name: Create the repository for EPEL
+    copy: src=files/epel.repo dest=/etc/yum.repos.d/epel.repo
+    tags:
+    - repos
+  - name: Create the GPG key for EPEL
+    copy: src=files/RPM-GPG-KEY-EPEL-6 dest=/etc/pki/rpm-gpg
+    tags:
+    - repos
+  - name: ensure needed packages are installed
+    yum: pkg=$item state=present
+    with_items:
+    - httpd
+    - java-1.7.0-openjdk-devel.x86_64
+    - sysstat
+    - glances
+    - screen
+    tags:
+    - packages
+  - name: configure httpd
+    template: src=templates/httpd.conf.j2 dest=/etc/httpd/conf/httpd.conf
+    notify:
+    - restart httpd
+    tags:
+    - apache_setup
+  - name: ensure httpd is running
+    service: name=httpd state=started
+    tags:
+    - apache_setup
+  - name: ensure user www with uid 500 and group server is present
+    action: user name=www group=server uid=500 state=present
+    tags:
+    - prepare_app
+  - name: copy svt rpm files
+    copy: src=files/{{item}} dest=/tmp
+    with_items:
+    - servicetools-1.139-3.awl6.noarch.rpm
+    - dropwizard-servicetools-launcher-1.1.2-1.awl6.noarch.rpm
+    tags:
+    - svt-packages
+  - name: ensure servicetools rpm is installed
+    yum: name=/tmp/servicetools-1.139-3.awl6.noarch.rpm state=present
+    tags:
+    - svt-packages
+  - name: ensure dropwizard servicetools rpm is installed
+    yum: name=/tmp/dropwizard-servicetools-launcher-1.1.2-1.awl6.noarch.rpm state=present
+    tags:
+    - svt-packages
+  - name: ensure MIDDLE LOGS exist
+    file: name=/usr/MIDDLELOGS state=directory
+    tags:
+    - svt-prepare
+  - name: ensure app directories exist
+    action: file path={{item}} owner=www group=server mode=0755 state=directory
+    with_items:
+    - "{{middle_root}}"
+    - "{{client_root}}"
+    - "{{app_root}}"
+    - "{{dw_root}}"
+    - "{{dw_root}}/logs"
+    - "{{dw_root}}/fatjars"
+    - "{{dw_root}}/conf"
+    tags:
+    - prepare_app
+  - name: prepare servicetools directories
+    file: path=/etc/servicetools/$item state=directory
+    with_items:
+    - services/devlab722
+    - dispatchers/devlab722
+    tags:
+    - svt-files
+  - name: setup dw disptacher file
+    template: src=templates/middle-codestory.j2 dest=/etc/servicetools/dispatchers/devlab722/middle-codestory
+    tags:
+    - svt-files
+  - name: setup dw service file
+    copy: src=files/servicetools/codestory.devlab722.net dest=/etc/servicetools/services/devlab722/codestory.devlab722.net
+    tags:
+    - svt-files
+  - name: setup jvm.properties
+    copy: src=files/servicetools/jvm.properties dest={{dw_root}}/conf/jvm.properties owner=www group=server mode=0644
+    tags:
+    - svt-files
+  - name: setup jar.txt
+    copy: src=files/servicetools/jar.txt dest={{dw_root}}/conf/jar.txt owner=www group=server mode=0644
+    tags:
+    - svt-files
+  - name: ensure custom restart script is present
+    copy: src=files/my_restart.sh dest={{dw_root}}/my_restart.sh
+    tags:
+    - my_restart
