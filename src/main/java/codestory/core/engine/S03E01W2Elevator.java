@@ -325,9 +325,13 @@ public class S03E01W2Elevator implements ElevatorEngine {
         for (User user : users) {
             user.elevatorIsOpen(currentFloor.get());
             if (user.done()) {
-                score = score.success(user);
-                log.info("openTheDoor(): score for user <{}> is <{}>, totalScore is <{}>", user, Score.score(user),
-                        score.getScore());
+                try {
+                    score = score.success(user);
+                    log.info("openTheDoor(): score for user <{}> is <{}>, totalScore is <{}>", user, Score.score(user),
+                            score.getScore());
+                } catch (IllegalStateException e) {
+                    log.info("openTheDoor(): caught IllegalStateException <{}> while computing score for user <{}>", e.getMessage(), user.toString());
+                }
                 doneUsers.add(user);
             }
         }
