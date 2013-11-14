@@ -1,0 +1,30 @@
+Idées:
+
+score: il coute moins cher de faire attendre un utilisateur dans l'ascenseur que dedans (au moins valide pour la 1ère semaine)
+
+- ne pas prendre plus d'un certain nombre de personnes dans l'ascenseur? au risque de ne plus marquer de points pendant un certain temps car les personnes
+auront attendu trop longtemps...
+- ne pas prendre les personnes qui ne rapporteront pas de points (attendu > 40 ticks ou nb_tick_to_go > 20) ?
+- être capable de reconstruire les users en fonction des Call et des Go pour pouvoir leur calculer un score hypothétique
+- différencier le cas "pas grand monde" du cas "y a foule"?
+
+
+FAIT - ne pas monter/descendre si pas necessaire
+   - personne dans l'ascenseur
+   - en train de monter et personne aux étages supérieurs et des personnes ayant appelé aux étages inférieurs
+   - en train de descendre et personne aux étages inférieurs et des personnes ayant appelé aux étages supérieurs
+
+
+FAIT - se positionner au milieur
+        - si vide
+        - et personne n'a appelé
+
+FAIT - en phase montante ne pas s'arrêter aux étages où il n'y a que des gens qui veulent descendre
+FAIT - en phase descendante...
+
+
+// Plus nécessaire pour l'instant - détecter les boucles OPEN/CLOSE à un étage donné
+
+// Pas nécessaire pour l'instant - valider que les userHasExited/userHasEntered sont valides
+   - ils sont demandés à un étage qui a une liste de personnes qui doivent sortir/entrer
+   - question: que faire si décalage?

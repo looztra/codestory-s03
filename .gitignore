@@ -13,4 +13,3 @@ target/
 dependency-reduced-pom.xml
 build/
 .gradle/
-optimisations.txt
