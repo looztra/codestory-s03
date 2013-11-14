@@ -62,6 +62,8 @@ public class S03E01W2Elevator implements ElevatorEngine {
     private Door currentDoorStatus;
     private int middleFloor;
     private int cabinSize;
+    private String lastResetCause;
+    private ElevatorContext lastResetContext;
 
 
     public S03E01W2Elevator() {
@@ -94,6 +96,8 @@ public class S03E01W2Elevator implements ElevatorEngine {
             S03E01W2Elevator.log.warn("RESET, cause: <{}>, lowerFloor: <{}>, higherFloor: <{}>, cabinSize: <{}>",
                     cause, lowerFloor, higherFloor, cabinSize);
             logCurrentState("reset, cause:" + cause);
+            lastResetCause = cause;
+            lastResetContext = getCurrentElevatorContext();
         }
         score = new Score();
         lastCommands = initLastCommandQueue();
@@ -230,6 +234,9 @@ public class S03E01W2Elevator implements ElevatorEngine {
         }
         return jsonState;
     }
+
+
+
 
     @VisibleForTesting
     protected void updateUserState() {
@@ -666,4 +673,32 @@ public class S03E01W2Elevator implements ElevatorEngine {
     protected int evaluateMiddleFloor() {
         return (higherFloor - lowerFloor) / 2 + lowerFloor;
     }
+
+    private ElevatorContext getCurrentElevatorContext() {
+        return ElevatorContext.builder()
+                .source("getState")
+                .score(score)
+                .tick(ticks.get())
+                .lowerFloor(lowerFloor)
+                .higherFloor(higherFloor)
+                .currentFloor(currentFloor.get())
+                .previousFloor(previousFloor.get())
+                .middleFloor(middleFloor)
+                .currentNbOfUsersInsideTheElevator(currentNbOfUsersInsideTheElevator.get())
+                .previousCommand(previousCommand)
+                .currentDirection(currentDirection)
+                .someoneIsWaitingAtLowerLevels(someoneIsWaitingAtLowerLevels())
+                .someoneIsWaitingAtUpperLevels(someoneIsWaitingAtUpperLevels())
+                .someoneRequestedAStopAtLowerLevels(someoneRequestedAStopAtLowerLevels())
+                .someoneRequestedAStopAtUpperLevels(someoneRequestedAStopAtUpperLevels())
+                .userWaitingAtCurrentFloor(userWaitingAtCurrentFloor())
+                .userInsideElevatorNeedToGetOut(userInsideElevatorNeedToGetOut())
+                .currentDoorStatus(currentDoorStatus)
+                .lastCommands(lastCommands)
+                .lastResetCause(lastResetCause)
+                .lastResetContext(getLastResetContext())
+                .users(users)
+                .build();
+    }
+
 }

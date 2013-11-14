@@ -35,6 +35,8 @@ public class ElevatorContext {
     private final boolean userInsideElevatorNeedToGetOut;
     private final Door currentDoorStatus;
     private final Map<Integer, String> lastCommands;
+    private final String lastResetCause;
+    private final ElevatorContext lastResetContext;
     private final List<User> users;
 
 
