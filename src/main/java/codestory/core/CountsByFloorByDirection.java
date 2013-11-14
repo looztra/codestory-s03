@@ -1,5 +1,6 @@
 package codestory.core;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Maps;
 import com.google.common.hash.HashCode;
 import lombok.Getter;
@@ -8,8 +9,9 @@ import java.util.Map;
 
 @Getter
 public class CountsByFloorByDirection {
-    private Map<Direction, Integer> countByDirection = Maps.newHashMap();
     private Integer floor;
+    @JsonProperty("count")
+    private Map<Direction, Integer> countByDirection = Maps.newHashMap();
     public CountsByFloorByDirection(Integer floor, Integer nbDown, Integer nbUp) {
         this.floor = floor;
         if( nbDown != null ) {

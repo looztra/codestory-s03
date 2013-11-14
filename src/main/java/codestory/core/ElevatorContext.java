@@ -15,6 +15,7 @@ import java.util.Map;
 @Builder
 @Getter
 public class ElevatorContext {
+    private final String caller;
     private final int score;
     private final int tick;
     private final int lowerFloor;
@@ -35,6 +36,8 @@ public class ElevatorContext {
     private final boolean userWaitingAtCurrentFloor;
     private final boolean userInsideElevatorNeedToGetOut;
     private final Map<Integer, String> lastCommands;
+    private final List<CountsByFloorByDirection> waitingList;
+    private final List<CountsByFloorByDirection> stopList;
     private final String lastResetCause;
     private final ElevatorContext lastResetContext;
     private final List<User> users;
