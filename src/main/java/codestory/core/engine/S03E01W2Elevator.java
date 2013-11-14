@@ -1,12 +1,6 @@
 package codestory.core.engine;
 
-import codestory.core.Command;
-import codestory.core.CountsByFloorByDirection;
-import codestory.core.Direction;
-import codestory.core.Door;
-import codestory.core.ElevatorContext;
-import codestory.core.Score;
-import codestory.core.User;
+import codestory.core.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
@@ -20,14 +14,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * User: cfurmaniak
@@ -96,8 +87,8 @@ public class S03E01W2Elevator implements ElevatorEngine {
             S03E01W2Elevator.log.warn("RESET, cause: <{}>, lowerFloor: <{}>, higherFloor: <{}>, cabinSize: <{}>",
                     cause, lowerFloor, higherFloor, cabinSize);
             logCurrentState("reset, cause:" + cause);
+            lastResetContext = getCurrentElevatorContext(false);
             lastResetCause = cause;
-            lastResetContext = getCurrentElevatorContext();
         }
         score = new Score();
         lastCommands = initLastCommandQueue();
@@ -204,29 +195,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
 
     public String getState() {
         String jsonState = "UNDEF";
-        ElevatorContext context = ElevatorContext.builder()
-                .source("getState")
-                .score(score)
-                .tick(ticks.get())
-                .lowerFloor(lowerFloor)
-                .higherFloor(higherFloor)
-                .currentFloor(currentFloor.get())
-                .previousFloor(previousFloor.get())
-                .middleFloor(middleFloor)
-                .currentNbOfUsersInsideTheElevator(currentNbOfUsersInsideTheElevator.get())
-                .previousCommand(previousCommand)
-                .currentDirection(currentDirection)
-                .someoneIsWaitingAtLowerLevels(someoneIsWaitingAtLowerLevels())
-                .someoneIsWaitingAtUpperLevels(someoneIsWaitingAtUpperLevels())
-                .someoneRequestedAStopAtLowerLevels(someoneRequestedAStopAtLowerLevels())
-                .someoneRequestedAStopAtUpperLevels(someoneRequestedAStopAtUpperLevels())
-                .userWaitingAtCurrentFloor(userWaitingAtCurrentFloor())
-                .userInsideElevatorNeedToGetOut(userInsideElevatorNeedToGetOut())
-                .currentDoorStatus(currentDoorStatus)
-                .lastCommands(lastCommands)
-                .users(users)
-                .build();
-
+        ElevatorContext context = getCurrentElevatorContext(true);
         try {
             jsonState = MAPPER.writeValueAsString(context);
         } catch (JsonProcessingException e) {
@@ -234,8 +203,6 @@ public class S03E01W2Elevator implements ElevatorEngine {
         }
         return jsonState;
     }
-
-
 
 
     @VisibleForTesting
@@ -674,8 +641,8 @@ public class S03E01W2Elevator implements ElevatorEngine {
         return (higherFloor - lowerFloor) / 2 + lowerFloor;
     }
 
-    private ElevatorContext getCurrentElevatorContext() {
-        return ElevatorContext.builder()
+    private ElevatorContext getCurrentElevatorContext(boolean includeLastResetContext) {
+        ElevatorContext.ElevatorContextBuilder builder = ElevatorContext.builder()
                 .source("getState")
                 .score(score)
                 .tick(ticks.get())
@@ -696,9 +663,11 @@ public class S03E01W2Elevator implements ElevatorEngine {
                 .currentDoorStatus(currentDoorStatus)
                 .lastCommands(lastCommands)
                 .lastResetCause(lastResetCause)
-                .lastResetContext(getLastResetContext())
-                .users(users)
-                .build();
+                .users(users);
+        if (includeLastResetContext) {
+            builder.lastResetContext(getLastResetContext());
+        }
+        return builder.build();
     }
 
 }
