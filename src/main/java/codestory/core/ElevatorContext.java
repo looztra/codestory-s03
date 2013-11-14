@@ -16,7 +16,7 @@ import java.util.Map;
 @Getter
 public class ElevatorContext {
     private final String source;
-    private final Score score;
+    private final int score;
     private final int tick;
     private final int lowerFloor;
     private final int higherFloor;
