@@ -1,0 +1,13 @@
+# Logging settings.
+logging:
+
+  # The default level of all loggers. Can be OFF, ERROR, WARN, INFO, DEBUG, TRACE, or ALL.
+  level: INFO
+http:
+  port: 8090
+  adminPort: 8091
+logstash:
+  enabled: true
+  threshold: ALL
+  currentLogFilename: ./target/json.log
+  archive: false

@@ -1,0 +1,1 @@
+restart_service codestory.devlab722.net; if [ $? -eq 1 ]; then echo success; fi

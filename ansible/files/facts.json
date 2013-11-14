@@ -1,0 +1,164 @@
+codestory-s03-eu.devlab722.net | success >> {
+    "ansible_facts": {
+        "ansible_all_ipv4_addresses": [
+            "146.185.168.25"
+        ], 
+        "ansible_all_ipv6_addresses": [
+            "fe80::e01:aff:fe5e:ca01"
+        ], 
+        "ansible_architecture": "x86_64", 
+        "ansible_bios_date": "01/01/2007", 
+        "ansible_bios_version": "Bochs", 
+        "ansible_cmdline": {
+            "ro": true, 
+            "root": "LABEL=DOROOT"
+        }, 
+        "ansible_date_time": {
+            "date": "2013-11-10", 
+            "day": "10", 
+            "epoch": "1384102585", 
+            "hour": "16", 
+            "iso8601": "2013-11-10T16:56:25Z", 
+            "iso8601_micro": "2013-11-10T16:56:25.650002Z", 
+            "minute": "56", 
+            "month": "11", 
+            "second": "25", 
+            "time": "16:56:25", 
+            "tz": "UTC", 
+            "year": "2013"
+        }, 
+        "ansible_default_ipv4": {
+            "address": "146.185.168.25", 
+            "alias": "eth0", 
+            "gateway": "146.185.168.1", 
+            "interface": "eth0", 
+            "macaddress": "0c:01:0a:5e:ca:01", 
+            "mtu": 1500, 
+            "netmask": "255.255.255.0", 
+            "network": "146.185.168.0", 
+            "type": "ether"
+        }, 
+        "ansible_default_ipv6": {}, 
+        "ansible_devices": {
+            "sr0": {
+                "holders": [], 
+                "host": "IDE interface: Intel Corporation 82371SB PIIX3 IDE [Natoma/Triton II]", 
+                "model": "QEMU DVD-ROM", 
+                "partitions": {}, 
+                "removable": "1", 
+                "rotational": "1", 
+                "scheduler_mode": "cfq", 
+                "sectors": "2097151", 
+                "sectorsize": "512", 
+                "size": "1024.00 MB", 
+                "support_discard": "0", 
+                "vendor": "QEMU"
+            }, 
+            "vda": {
+                "holders": [], 
+                "host": "SCSI storage controller: Red Hat, Inc Virtio block device", 
+                "model": null, 
+                "partitions": {}, 
+                "removable": "0", 
+                "rotational": "1", 
+                "scheduler_mode": "cfq", 
+                "sectors": "41943040", 
+                "sectorsize": "512", 
+                "size": "20.00 GB", 
+                "support_discard": "0", 
+                "vendor": "6900"
+            }
+        }, 
+        "ansible_distribution": "CentOS", 
+        "ansible_distribution_release": "Final", 
+        "ansible_distribution_version": "6.4", 
+        "ansible_domain": "", 
+        "ansible_eth0": {
+            "active": true, 
+            "device": "eth0", 
+            "ipv4": {
+                "address": "146.185.168.25", 
+                "netmask": "255.255.255.0", 
+                "network": "146.185.168.0"
+            }, 
+            "ipv6": [
+                {
+                    "address": "fe80::e01:aff:fe5e:ca01", 
+                    "prefix": "64", 
+                    "scope": "link"
+                }
+            ], 
+            "macaddress": "0c:01:0a:5e:ca:01", 
+            "module": "virtio_net", 
+            "mtu": 1500, 
+            "type": "ether"
+        }, 
+        "ansible_form_factor": "Other", 
+        "ansible_fqdn": "codestory-s03-eu", 
+        "ansible_hostname": "codestory-s03-eu", 
+        "ansible_interfaces": [
+            "lo", 
+            "eth0"
+        ], 
+        "ansible_kernel": "2.6.32-358.6.2.el6.x86_64", 
+        "ansible_lo": {
+            "active": true, 
+            "device": "lo", 
+            "ipv4": {
+                "address": "127.0.0.1", 
+                "netmask": "255.0.0.0", 
+                "network": "127.0.0.0"
+            }, 
+            "ipv6": [
+                {
+                    "address": "::1", 
+                    "prefix": "128", 
+                    "scope": "host"
+                }
+            ], 
+            "mtu": 16436, 
+            "type": "loopback"
+        }, 
+        "ansible_machine": "x86_64", 
+        "ansible_memfree_mb": 113, 
+        "ansible_memtotal_mb": 490, 
+        "ansible_mounts": [
+            {
+                "device": "/dev/vda", 
+                "fstype": "ext4", 
+                "mount": "/", 
+                "options": "rw,errors=remount-ro", 
+                "size_available": 18780209152, 
+                "size_total": 21137846272
+            }
+        ], 
+        "ansible_os_family": "RedHat", 
+        "ansible_pkg_mgr": "yum", 
+        "ansible_processor": [
+            "QEMU Virtual CPU version 1.0"
+        ], 
+        "ansible_processor_cores": 1, 
+        "ansible_processor_count": 1, 
+        "ansible_processor_threads_per_core": 1, 
+        "ansible_processor_vcpus": 1, 
+        "ansible_product_name": "Bochs", 
+        "ansible_product_serial": "NA", 
+        "ansible_product_uuid": "D614BDE1-49FC-11E3-B7F4-04010897BD01", 
+        "ansible_product_version": "NA", 
+        "ansible_python_version": "2.6.6", 
+        "ansible_selinux": false, 
+        "ansible_ssh_host_key_dsa_public": "AAAAB3NzaC1kc3MAAACBAJOiVDLvslRuMunYTWQd7DruiDDwI81CDEY6CwFZ1JV7/9kY2SzVMfHwwkWSpWhNzF03OWmjc2nc0x+4YtVgX232si/EsNa173ntpM0haD9+cbPDgIa95Z2rgTbGGUb+Zw7vf7uKo9WZQwehXtM1wFbCP7l6Kvw4ej65mPztOD/rAAAAFQCkzrajIJM7zskYGxG7/7evio+uFQAAAIBDYhsd/4uK1DjxhklP2ukm49BcFIUNlAq5aRU3GT1ZzHI3PqVQuteJEGF5A12nPr+0E/0VFLks3zouZx7JCuEvJKvD/+1e0hBMyt0qaFv5NTuBEE3OoXsgEuOq1q/GvdUj6YPnZJA5NXRoL3pKxkHNeoLoQWm3MxuydBHgrBtp4gAAAIAxAZ444dq0Myt+A6aMhKbt+KO1s+vCd5ay/wOzDulV+tnoPQsg7pPRNM/7Qii78x3RYX9rZRY/HSloLN1jOPfgfWuoYRmYd8QC/mxgg9+Ub6JZt0/tD5pHwTgNr0m0paN4mPE1708PmodOM/gprE/7OKM11dZhZ448jIA4H/D23Q==", 
+        "ansible_ssh_host_key_rsa_public": "AAAAB3NzaC1yc2EAAAABIwAAAQEA4xqnoGa/YSH9lZryoUjWtsKex5048SnUPnjMEVNoBGQ1/I4EeoDF+0jLk2ofx8XbjAy5MjeyfW8B9KI1QLWEY2tB7KrGWMzqZ2XtLMzuyKnGnD/vdKLjLk3IXA/NSt8Hik2XYebzxTCYSwZWtvoO236iA1qOxKUhORdDkpVapdoo+bXrX7u+LGgJfitgOakfu1tPc7RvoYMUVWJubCy3YCk0A07cTErJ5KScThVcs9uhAG9Fv62R9nz57CPOKW6ph5ZKJO7rc3dd/kGfiiDt36jfV+AmSC1A8Jtm/Ae1Lq/4rt7zqcAHa36sur4z1Ay+MEnxSYtYF7qDGri4FjvJXQ==", 
+        "ansible_swapfree_mb": 0, 
+        "ansible_swaptotal_mb": 0, 
+        "ansible_system": "Linux", 
+        "ansible_system_vendor": "Bochs", 
+        "ansible_user_id": "root", 
+        "ansible_userspace_architecture": "x86_64", 
+        "ansible_userspace_bits": "64", 
+        "ansible_virtualization_role": "guest", 
+        "ansible_virtualization_type": "kvm"
+    }, 
+    "changed": false
+}
+

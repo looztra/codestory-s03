@@ -1,0 +1,19 @@
+\.orig$
+\.orig\..*$
+\.chg\..*$
+\.rej$
+\.conflict\~$
+build
+nbproject/private
+.idea
+target
+.classpath
+.project
+.settings
+syntax: glob
+atlassian-ide-plugin.xml
+syntax: regexp
+.*iml
+dependency-reduced-pom.xml
+.gradle
+.git
