@@ -1,15 +1,18 @@
 package codestory.core.engine;
 
 import codestory.core.Command;
+import codestory.core.CountsByFloorByDirection;
 import codestory.core.Direction;
 import codestory.core.Door;
 import codestory.core.User;
+import com.google.common.collect.ImmutableMap;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.fest.assertions.Assertions.*;
@@ -579,7 +582,6 @@ public class S03E01W2ElevatorTest {
         assertThat(elevator.getNextDirection()).isEqualTo(Direction.UP);
     }
 
-
     @Test
     public void
     getNextDirection_should_be_UP_when_current_dir_is_DOWN_and_someone_requested_a_stop_higher_and_someone_is_waiting_upstairs_and_nobody_requested_something_lower
@@ -615,7 +617,7 @@ public class S03E01W2ElevatorTest {
 
     @Test
     public void openTheDoor_should_clear_already_done_users() {
-        User done1 = new User(3,Direction.DOWN);
+        User done1 = new User(3, Direction.DOWN);
         done1.setCurrentFloor(0);
         done1.go(2);
         done1.setState(User.State.DONE);
@@ -648,6 +650,69 @@ public class S03E01W2ElevatorTest {
         assertThat(users.size()).isEqualTo(2);
         elevator.openTheDoor();
         assertThat(users.size()).isEqualTo(1);
+
+    }
+
+    @Test
+    public void incrementValueForFloor_should_increment_as_expected() {
+        Map<Integer, Integer> input = ImmutableMap.<Integer, Integer>builder().put(3, 3).put(1, 0).build();
+        Map<Integer, Integer> output1 = S03E01W2Elevator.incrementValueForFloor(input, 3);
+        Map<Integer, Integer> output2 = S03E01W2Elevator.incrementValueForFloor(input, 2);
+        assertThat(output1.get(3)).isEqualTo(4);
+        assertThat(output2.get(2)).isEqualTo(1);
+    }
+
+    @Test
+    public void aggregateUserInfos_should_be_empty_when_no_user_in_the_system() {
+        Map<String, List<CountsByFloorByDirection>> actual = elevator.aggregateUserInfos();
+        assertThat(actual.get(S03E01W2Elevator.WAITING_LIST)).isEmpty();
+        assertThat(actual.get(S03E01W2Elevator.STOP_LIST)).isEmpty();
+    }
+
+    @Test
+    public void aggregateUserInfos_should_work() {
+        User waitingUser1 = new User(1, Direction.DOWN);
+        users.add(waitingUser1);
+        User waitingUser2 = new User(3, Direction.UP);
+        users.add(waitingUser2);
+        users.add(new User(3, Direction.UP));
+        User stop1 = new User(4, Direction.DOWN);
+        stop1.go(3);
+        stop1.setState(User.State.TRAVELLING);
+        users.add(stop1);
+        User stop2 = new User(2, Direction.DOWN);
+        stop2.go(0);
+        stop2.setState(User.State.TRAVELLING);
+        users.add(stop2);
+
+        Map<String, List<CountsByFloorByDirection>> actual = elevator.aggregateUserInfos();
+        List<CountsByFloorByDirection> waitingList = actual.get(S03E01W2Elevator.WAITING_LIST);
+        assertThat(waitingList).hasSize(2);
+        for (CountsByFloorByDirection c : waitingList) {
+            if (c.getFloor() == 1) {
+                assertThat(c.getCountByDirection().get(Direction.DOWN)).isEqualTo(1);
+                assertThat(c.getCountByDirection().get(Direction.UP)).isEqualTo(0);
+            } else if (c.getFloor() == 3) {
+                assertThat(c.getCountByDirection().get(Direction.DOWN)).isEqualTo(0);
+                assertThat(c.getCountByDirection().get(Direction.UP)).isEqualTo(2);
+            } else {
+                throw new IllegalStateException("unexpected floor value <" + c.getFloor() + ">");
+            }
+        }
+
+        List<CountsByFloorByDirection> stopList = actual.get(S03E01W2Elevator.STOP_LIST);
+        assertThat(stopList).hasSize(2);
+        for (CountsByFloorByDirection c : stopList) {
+            if (c.getFloor() == 3) {
+                assertThat(c.getCountByDirection().get(Direction.DOWN)).isEqualTo(1);
+                assertThat(c.getCountByDirection().get(Direction.UP)).isEqualTo(0);
+            } else if (c.getFloor() == 0) {
+                assertThat(c.getCountByDirection().get(Direction.DOWN)).isEqualTo(1);
+                assertThat(c.getCountByDirection().get(Direction.UP)).isEqualTo(0);
+            } else {
+                throw new IllegalStateException("unexpected floor value <" + c.getFloor() + ">");
+            }
+        }
 
     }
 
