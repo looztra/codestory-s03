@@ -643,16 +643,17 @@ public class S03E01W2Elevator implements ElevatorEngine {
 
     private ElevatorContext getCurrentElevatorContext(boolean includeLastResetContext) {
         ElevatorContext.ElevatorContextBuilder builder = ElevatorContext.builder()
-                .source("getState")
                 .score(score.getScore())
                 .tick(ticks.get())
                 .lowerFloor(lowerFloor)
                 .higherFloor(higherFloor)
+                .cabinSize(cabinSize)
                 .currentFloor(currentFloor.get())
                 .previousFloor(previousFloor.get())
                 .middleFloor(middleFloor)
-                .currentNbOfUsersInsideTheElevator(currentNbOfUsersInsideTheElevator.get())
                 .previousCommand(previousCommand)
+                .currentDoorStatus(currentDoorStatus)
+                .currentNbOfUsersInsideTheElevator(currentNbOfUsersInsideTheElevator.get())
                 .currentDirection(currentDirection)
                 .someoneIsWaitingAtLowerLevels(someoneIsWaitingAtLowerLevels())
                 .someoneIsWaitingAtUpperLevels(someoneIsWaitingAtUpperLevels())
@@ -660,7 +661,6 @@ public class S03E01W2Elevator implements ElevatorEngine {
                 .someoneRequestedAStopAtUpperLevels(someoneRequestedAStopAtUpperLevels())
                 .userWaitingAtCurrentFloor(userWaitingAtCurrentFloor())
                 .userInsideElevatorNeedToGetOut(userInsideElevatorNeedToGetOut())
-                .currentDoorStatus(currentDoorStatus)
                 .lastCommands(lastCommands)
                 .lastResetCause(lastResetCause)
                 .users(users);
