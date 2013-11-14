@@ -78,6 +78,9 @@ public class User {
         }
     }
 
+    public Integer bestTickToGo() {
+        return Score.bestTickToGo(initialFloor, floorToGo);
+    }
     public enum State {
         WAITING, TRAVELLING, DONE,;
     }

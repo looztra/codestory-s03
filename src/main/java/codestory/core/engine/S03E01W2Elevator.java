@@ -1,11 +1,19 @@
 package codestory.core.engine;
 
-import codestory.core.*;
+import codestory.core.Command;
+import codestory.core.CountsByFloorByDirection;
+import codestory.core.Direction;
+import codestory.core.Door;
+import codestory.core.ElevatorContext;
+import codestory.core.Score;
+import codestory.core.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -13,13 +21,13 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.*;
 
 /**
  * User: cfurmaniak
@@ -36,8 +44,10 @@ public class S03E01W2Elevator implements ElevatorEngine {
     public static final int DEFAULT_LOWER_FLOOR = 0;
     public static final int DEFAULT_HIGHER_FLOOR = 5;
     public static final int DEFAULT_CABIN_SIZE = 30;
-    private Score score;
+    public static final String WAITING_LIST = "waitingList";
+    public static final String STOP_LIST = "stopList";
     protected Map<Integer, String> lastCommands = initLastCommandQueue();
+    private Score score;
     private AtomicInteger ticks = new AtomicInteger(0);
     @Getter
     private Integer lowerFloor = new Integer(0);
@@ -65,6 +75,18 @@ public class S03E01W2Elevator implements ElevatorEngine {
                 return this.size() > LAST_COMMANDS_QUEUE_SIZE;
             }
         };
+    }
+
+    public static Map<Integer, Integer> incrementValueForFloor(Map<Integer, Integer> input, Integer floor) {
+        Integer count;
+        if (input.containsKey(floor)) {
+            count = input.get(floor) + 1;
+        } else {
+            count = 1;
+        }
+        Map<Integer, Integer> tmp = Maps.newHashMap(input);
+        tmp.put(floor, count);
+        return ImmutableMap.<Integer, Integer>builder().putAll(tmp).build();
     }
 
     public ElevatorEngine reset(String cause, int lowerFloor, int higherFloor, int cabinSize) {
@@ -303,9 +325,13 @@ public class S03E01W2Elevator implements ElevatorEngine {
         for (User user : users) {
             user.elevatorIsOpen(currentFloor.get());
             if (user.done()) {
-                score = score.success(user);
-                log.info("openTheDoor(): score for user <{}> is <{}>, totalScore is <{}>", user, Score.score(user),
-                        score.getScore());
+                try {
+                    score = score.success(user);
+                    log.info("openTheDoor(): score for user <{}> is <{}>, totalScore is <{}>", user, Score.score(user),
+                            score.getScore());
+                } catch (IllegalStateException e) {
+                    log.info("openTheDoor(): caught IllegalStateException <{}> while computing score for user <{}>", e.getMessage(), user.toString());
+                }
                 doneUsers.add(user);
             }
         }
@@ -513,20 +539,57 @@ public class S03E01W2Elevator implements ElevatorEngine {
 
     @VisibleForTesting
     protected void checkFloorValue(int floorValue) {
-        checkArgument(floorValue >= lowerFloor, "'atFloor' cannot be negative");
-        checkArgument(floorValue <= higherFloor, "'atFloor' cannot be more than the total nb of floors <" +
+        checkArgument(floorValue >= lowerFloor, "'atFloor'=" + floorValue + " cannot be less than the lowerFloor <" +
+                lowerFloor + ">");
+        checkArgument(floorValue <= higherFloor, "'atFloor'=" + floorValue + " cannot be more than the higherFloor <" +
                 higherFloor + ">");
+    }
+
+    protected Map<String, List<CountsByFloorByDirection>> aggregateUserInfos() {
+        Map<Integer, Integer> waitCountByFloorForUp = new HashMap<>();
+        Map<Integer, Integer> waitCountByFloorForDown = new HashMap<>();
+        Map<Integer, Integer> stopCountByFloorForUp = new HashMap<>();
+        Map<Integer, Integer> stopCountByFloorForDown = new HashMap<>();
+        List<CountsByFloorByDirection> waitingList = new ArrayList<>();
+        List<CountsByFloorByDirection> stopList = new ArrayList<>();
+        synchronized (users) {
+            for (User user : users) {
+                if (user.waiting()) {
+                    switch (user.getDirection()) {
+                        case DOWN:
+                            waitCountByFloorForDown = incrementValueForFloor(waitCountByFloorForDown, user.getInitialFloor());
+                            break;
+                        case UP:
+                            waitCountByFloorForUp = incrementValueForFloor(waitCountByFloorForUp, user.getInitialFloor());
+                            break;
+                    }
+                } else if (user.traveling()) {
+                    switch (user.getDirection()) {
+                        case DOWN:
+                            stopCountByFloorForDown = incrementValueForFloor(stopCountByFloorForDown, user.getFloorToGo());
+                            break;
+                        case UP:
+                            stopCountByFloorForUp = incrementValueForFloor(stopCountByFloorForUp, user.getFloorToGo());
+                            break;
+                    }
+                }
+            }
+        }
+        for (int f = lowerFloor; f <= higherFloor; f++) {
+            if (waitCountByFloorForDown.containsKey(f) || waitCountByFloorForUp.containsKey(f)) {
+                waitingList.add(new CountsByFloorByDirection(f, waitCountByFloorForDown.get(f), waitCountByFloorForUp.get(f)));
+            }
+            if (stopCountByFloorForDown.containsKey(f) || stopCountByFloorForUp.containsKey(f)) {
+                stopList.add(new CountsByFloorByDirection(f, stopCountByFloorForDown.get(f), stopCountByFloorForUp.get(f)));
+            }
+        }
+        return ImmutableMap.<String, List<CountsByFloorByDirection>>builder().put(WAITING_LIST, waitingList).put(STOP_LIST, stopList).build();
     }
 
     @VisibleForTesting
     protected String logWaitingListContent() {
         Multimap<Integer, User> waitByFloor = ArrayListMultimap.create();
-        for (User user : users) {
-            // log.info("logWaitingListContent(): dealing with user {}", user.toString());
-            if (user.waiting()) {
-                waitByFloor.put(user.getInitialFloor(), user);
-            }
-        }
+
         String value;
         if (waitByFloor.isEmpty()) {
             value = "{nobody is waiting}";
