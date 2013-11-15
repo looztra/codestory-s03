@@ -17,6 +17,7 @@ public class User {
     private Integer tickToGo;
     private User.State state;
     private Integer tickToWait;
+    private Integer travelingTick;
 
     public User(Integer initialFloor, Direction direction) throws ElevatorIsBrokenException {
         this.initialFloor = initialFloor;
@@ -24,11 +25,13 @@ public class User {
         this.state = State.WAITING;
         this.tickToGo = 0;
         this.tickToWait = 0;
+        this.travelingTick = Integer.MIN_VALUE;
     }
 
-    public void elevatorIsOpen(Integer floor) throws ElevatorIsBrokenException {
+    public void elevatorIsOpen(Integer floor, Integer atTick) throws ElevatorIsBrokenException {
         if (waiting() && at(floor) && elevatorIsAtWaitingFloor(floor)) {
             state = State.TRAVELLING;
+            travelingTick = atTick;
         } else if (traveling() && at(floorToGo)) {
             state = State.DONE;
         }

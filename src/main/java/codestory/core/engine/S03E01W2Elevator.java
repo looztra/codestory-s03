@@ -1,21 +1,11 @@
 package codestory.core.engine;
 
-import codestory.core.Command;
-import codestory.core.CountsByFloorByDirection;
-import codestory.core.Direction;
-import codestory.core.Door;
-import codestory.core.ElevatorContext;
-import codestory.core.Score;
-import codestory.core.User;
+import codestory.core.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,14 +14,11 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * User: cfurmaniak
@@ -70,6 +57,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
     private int cabinSize;
     private String lastResetCause;
     private String lastResetDateTime;
+    private int lastResetTick;
     private ElevatorContext lastResetContext;
 
 
@@ -114,6 +102,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
             logCurrentState("reset, cause:" + cause);
             lastResetDateTime = new DateTime(DateTimeZone.UTC).toString(ISODateTimeFormat.dateHourMinuteSecondMillis());
             lastResetContext = getCurrentElevatorContext("lastResetContext", false, true);
+            lastResetTick = ticks.get();
             lastResets.put(ticks.get(), lastResetContext);
             lastResetCause = cause;
         }
@@ -138,6 +127,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
     public Command nextCommand() {
         ticks.incrementAndGet();
         updateUserState();
+        tickForUsers();
         logCurrentState("nextCommand(before processing), previousCommand: <" + previousCommand + ">");
         Command nextCommand;
         if (shouldDoNothing()) {
@@ -161,7 +151,6 @@ public class S03E01W2Elevator implements ElevatorEngine {
             }
         }
         lastCommands.put(ticks.get(), currentFloor + ":" + nextCommand);
-        tickForUsers();
         logCurrentState("nextCommand (after processing) <" + nextCommand + ">");
         previousCommand = nextCommand;
 
@@ -338,7 +327,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
         log.info("openTheDoor");
         List<User> doneUsers = new ArrayList<>();
         for (User user : users) {
-            user.elevatorIsOpen(currentFloor.get());
+            user.elevatorIsOpen(currentFloor.get(), ticks.get());
             if (user.done()) {
                 try {
                     score = score.success(user);
@@ -709,7 +698,10 @@ public class S03E01W2Elevator implements ElevatorEngine {
                 .stopList(aggregatedUserInfo.get(STOP_LIST))
                 .usersInStrangeTravelingState(getUsersInStrangeTravelingState())
                 .lastCommands(lastCommands)
-                .lastResetCause(lastResetCause);
+                .lastResetCause(lastResetCause)
+                .lastResetDateTime(lastResetDateTime)
+                .lastResetTick(lastResetTick);
+
         if (includeFullUserList) {
             builder.users(users);
         }

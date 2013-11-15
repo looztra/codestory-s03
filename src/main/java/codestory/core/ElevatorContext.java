@@ -17,6 +17,9 @@ import java.util.Map;
 public class ElevatorContext {
     private final String caller;
     private String date;
+    private final String lastResetCause;
+    private final String lastResetDateTime;
+    private final int lastResetTick;
     private final int score;
     private final int tick;
     private final int lowerFloor;
@@ -40,7 +43,6 @@ public class ElevatorContext {
     private final List<CountsByFloorByDirection> waitingList;
     private final List<CountsByFloorByDirection> stopList;
     private final List<User> usersInStrangeTravelingState;
-    private final String lastResetCause;
     private final ElevatorContext lastResetContext;
     private final List<User> users;
 
