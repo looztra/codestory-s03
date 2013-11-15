@@ -1,11 +1,18 @@
 package codestory.core.engine;
 
-import codestory.core.*;
+import codestory.core.Command;
+import codestory.core.CountsByFloorByDirection;
+import codestory.core.Direction;
+import codestory.core.Door;
+import codestory.core.ElevatorContext;
+import codestory.core.Score;
+import codestory.core.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -14,11 +21,14 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.*;
 
 /**
  * User: cfurmaniak
@@ -39,7 +49,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
     public static final String WAITING_LIST = "waitingList";
     public static final String STOP_LIST = "stopList";
     protected Map<Integer, String> lastCommands = initLastCommandQueue();
-    protected Map<Integer,ElevatorContext> lastResets = initLastResetQueue();
+    protected Map<Integer, ElevatorContext> lastResets = initLastResetQueue();
     private Score score;
     private AtomicInteger ticks = new AtomicInteger(0);
     @Getter
@@ -102,7 +112,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
             lastResets.put(ticks.get(), lastResetContext);
             lastResetCause = cause;
         }
-        score = new Score();
+        score = new Score(lowerFloor,higherFloor);
         lastCommands = initLastCommandQueue();
         lastResets = initLastResetQueue();
         this.lowerFloor = lowerFloor;
@@ -217,7 +227,6 @@ public class S03E01W2Elevator implements ElevatorEngine {
         return jsonState;
     }
 
-
     @VisibleForTesting
     protected void updateUserState() {
         synchronized (users) {
@@ -247,11 +256,25 @@ public class S03E01W2Elevator implements ElevatorEngine {
     protected void userRequestedAStopFor(int floorToGo) {
         synchronized (users) {
             for (User user : users) {
-                if (user.traveling() && user.didNotRequestedAStopYet()) {
+                //TODO : gérer les éventuels décalage et accepter de traiter les users qui sont aussi à l'étage précédent?
+                if (user.traveling() && user.didNotRequestedAStopYet() && user.elevatorIsAtWaitingFloor(currentFloor.get()) && user.directionIsMine
+                        (getDirectionFromGoInfo
+                                (floorToGo))) {
                     user.go(floorToGo);
                     break;
                 }
             }
+        }
+    }
+
+    @VisibleForTesting
+    protected Direction getDirectionFromGoInfo(Integer floorToGo) {
+        if (floorToGo - currentFloor.get() > 0) {
+            return Direction.UP;
+        } else if (floorToGo - currentFloor.get() < 0) {
+            return Direction.DOWN;
+        } else {
+            return currentDirection;
         }
     }
 
@@ -314,7 +337,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
             if (user.done()) {
                 try {
                     score = score.success(user);
-                    log.info("openTheDoor(): score for user <{}> is <{}>, totalScore is <{}>", user, Score.score(user),
+                    log.info("openTheDoor(): score for user <{}> is <{}>, totalScore is <{}>", user, score.score(user),
                             score.getScore());
                 } catch (IllegalStateException e) {
                     log.info("openTheDoor(): caught IllegalStateException <{}> while computing score for user <{}>", e.getMessage(), user.toString());
@@ -636,8 +659,21 @@ public class S03E01W2Elevator implements ElevatorEngine {
         }
         return consistent;
     }
+
     protected int evaluateMiddleFloor() {
         return (higherFloor - lowerFloor) / 2 + lowerFloor;
+    }
+
+    protected List<User> getUsersInStrangeTravelingState() {
+        List<User> weirdUsers = new ArrayList<>();
+        synchronized (users) {
+            for (User user : users) {
+                if( user.traveling() && user.didNotRequestedAStopYet()) {
+                    weirdUsers.add(user);
+                }
+            }
+        }
+        return ImmutableList.copyOf(weirdUsers);
     }
 
     private ElevatorContext getCurrentElevatorContext(String caller, boolean includeLastResetContext,
@@ -665,9 +701,10 @@ public class S03E01W2Elevator implements ElevatorEngine {
                 .userInsideElevatorNeedToGetOut(userInsideElevatorNeedToGetOut())
                 .waitingList(aggregatedUserInfo.get(WAITING_LIST))
                 .stopList(aggregatedUserInfo.get(STOP_LIST))
+                .usersInStrangeTravelingState(getUsersInStrangeTravelingState())
                 .lastCommands(lastCommands)
                 .lastResetCause(lastResetCause);
-        if( includeFullUserList) {
+        if (includeFullUserList) {
             builder.users(users);
         }
         if (includeLastResetContext) {

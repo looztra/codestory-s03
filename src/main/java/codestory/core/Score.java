@@ -1,43 +1,17 @@
 package codestory.core;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 public class Score {
 
+    final Integer nbFloors;
     Integer score;
 
-    public Score() {
+    public Score(Integer lowerFloor, Integer higherFloor) {
         score = 0;
-    }
-
-    public Score loose() {
-        score -= 10;
-        return this;
-    }
-
-    public Score success(User user) throws IllegalStateException {
-        score += score(user);
-        return this;
-    }
-
-    public static Integer score(User user) throws IllegalStateException {
-        if (user.getTickToWait() < 1) {
-            throw new IllegalStateException("when done, user have to wait at least one tick");
-        }
-        Integer bestTickToGo = bestTickToGo(user.getInitialFloor(), user.getFloorToGo());
-        if (user.getTickToGo() < bestTickToGo) {
-            throw new IllegalStateException("when done, user have to wait at least minimum amount of ticks");
-        }
-        Integer score = 20
-                - user.getTickToWait() / 2
-                - user.getTickToGo()
-                + bestTickToGo;
-        return min(max(0, score), 20);
+        this.nbFloors = higherFloor - lowerFloor + 1;
     }
 
     public static Integer bestTickToGo(Integer floor, Integer floorToGo) {
@@ -49,6 +23,31 @@ public class Score {
         return elevatorHasToCloseDoorsWhenAtFloor
                 + elevatorGoesStraightFromFloorToFloorToGo
                 + elevatorHasToOpenDoorsWhenAtFloorToGo;
+    }
+
+    public Integer score(User user) throws IllegalStateException {
+        if (user.getTickToWait() < 1) {
+            throw new IllegalStateException("when done, user have to wait at least one tick");
+        }
+        Integer bestTickToGo = bestTickToGo(user.getInitialFloor(), user.getFloorToGo());
+        if (user.getTickToGo() < bestTickToGo) {
+            throw new IllegalStateException("when done, user have to wait at least minimum amount of ticks");
+        }
+        Integer score = nbFloors
+                - user.getTickToWait() / 2
+                - user.getTickToGo()
+                + bestTickToGo;
+        return min(max(0, score), nbFloors);
+    }
+
+    public Score loose() {
+        score -= nbFloors;
+        return this;
+    }
+
+    public Score success(User user) throws IllegalStateException {
+        score += score(user);
+        return this;
     }
 
     @Override

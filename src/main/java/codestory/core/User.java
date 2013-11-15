@@ -34,6 +34,9 @@ public class User {
         }
     }
 
+    public boolean directionIsMine(Direction direction) {
+        return this.direction == direction;
+    }
     public boolean elevatorIsAtDestination(int floor) {
         return floorToGo == floor;
     }

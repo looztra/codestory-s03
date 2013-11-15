@@ -15,7 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static codestory.core.Direction.DOWN;
+import static codestory.core.Direction.UP;
+import static org.fest.assertions.Assertions.*;
 
 /**
  * User: cfurmaniak
@@ -36,7 +38,7 @@ public class S03E01W2ElevatorTest {
 
     @Test
     public void check_initial_state() {
-        assertThat(elevator.getCurrentDirection()).isEqualTo(Direction.UP);
+        assertThat(elevator.getCurrentDirection()).isEqualTo(UP);
         assertThat(elevator.getCurrentDoorStatus()).isEqualTo(Door.CLOSE);
         assertThat(elevator.getCurrentNbOfUsersInsideTheElevator().get()).isEqualTo(0);
         assertThat(elevator.getCurrentFloor().get()).isEqualTo(0);
@@ -59,7 +61,7 @@ public class S03E01W2ElevatorTest {
     public void userWaitingAtCurrentFloor_should_return_true() {
         AtomicInteger currentFloor = new AtomicInteger(2);
         elevator.setCurrentFloor(currentFloor);
-        User user1 = new User(2, Direction.DOWN);
+        User user1 = new User(2, DOWN);
         users.add(user1);
         assertThat(user1.getInitialFloor()).isEqualTo(currentFloor.get());
         assertThat(elevator.nbUserWaitingAtCurrentFloor()).isEqualTo(1);
@@ -70,7 +72,7 @@ public class S03E01W2ElevatorTest {
     public void userWaitingAtCurrentFloor_should_return_false() {
         AtomicInteger currentFloor = new AtomicInteger(2);
         elevator.setCurrentFloor(currentFloor);
-        User user1 = new User(3, Direction.DOWN);
+        User user1 = new User(3, DOWN);
         users.add(user1);
         assertThat(user1.getInitialFloor()).isNotEqualTo(currentFloor.get());
         assertThat(elevator.nbUserWaitingAtCurrentFloor()).isEqualTo(0);
@@ -726,7 +728,56 @@ public class S03E01W2ElevatorTest {
 
     }
 
+    @Test
+    public void getDirectionFromGoInfo_should_return_UP() {
+        elevator.setCurrentFloor(new AtomicInteger(3));
+        assertThat(elevator.getDirectionFromGoInfo(4)).isEqualTo(Direction.UP);
+    }
+
+    @Test
+    public void getDirectionFromGoInfo_should_return_DOWN() {
+        elevator.setCurrentFloor(new AtomicInteger(3));
+        assertThat(elevator.getDirectionFromGoInfo(1)).isEqualTo(Direction.DOWN);
+    }
+
+    @Test(dataProvider = "directionProvider")
+    public void getDirectionFromGoInfo_should_return_currentDirection(Direction currentDirection) {
+        AtomicInteger currentFloor = new AtomicInteger(3);
+        elevator.setCurrentFloor(currentFloor);
+        elevator.setCurrentDirection(currentDirection);
+        assertThat(elevator.getDirectionFromGoInfo(currentFloor.get())).isEqualTo(currentDirection);
+    }
+
+    @Test(dataProvider = "providerFor_userRequestedAStopFor_should_work")
+    public void userRequestedAStopFor_should_work(User user, Integer currentFloor, Direction elevatorDirection, Integer floorToGo, Integer expectedFloorToGo) {
+        elevator.setCurrentDirection(elevatorDirection);
+        elevator.setCurrentFloor(new AtomicInteger(currentFloor));
+        users.add(user);
+        elevator.userRequestedAStopFor(floorToGo);
+        assertThat(user.getFloorToGo()).isEqualTo(expectedFloorToGo);
+
+    }
+
     // DATAPROVIDERS
+
+    @DataProvider(name = "providerFor_userRequestedAStopFor_should_work")
+    public Object[][] providerFor_userRequestedAStopFor_should_work() {
+        User u1 = new User(2, UP);
+        u1.setState(User.State.TRAVELLING);
+        User u2 = new User(2, UP);
+        u2.setState(User.State.TRAVELLING);
+        User u3 = new User(3, DOWN);
+        u3.setState(User.State.TRAVELLING);
+        u3.go(2);
+        User w1 = new User(4, DOWN);
+        return new Object[][]{
+                {u1, 2, UP, 4, 4}, // traveling user, willing to go at 4th floor and elevator is at waiting floor
+                {u2, 1, UP, 4, Integer.MIN_VALUE},// traveling user, willing to go at 4th floor and elevator is not at waiting floor
+                {u3, 3, UP, 4, 2}, // traveling user,  with floorToGo already set and elevator is at waiting floor
+                {w1, 3, UP, 4, Integer.MIN_VALUE}, // waiting user
+        };
+    }
+
     @DataProvider(name = "providerFor_previousCommand_is_not_CLOSE")
     public Object[][] providerFor_justClosedTheDoor_should_be_false() {
         return new Object[][]{
@@ -739,7 +790,7 @@ public class S03E01W2ElevatorTest {
 
     @DataProvider(name = "directionProvider")
     public Object[][] directionProvider() {
-        return new Object[][]{{Direction.DOWN}, {Direction.UP}};
+        return new Object[][]{{DOWN}, {UP}};
     }
 
 

@@ -38,6 +38,7 @@ public class ElevatorContext {
     private final Map<Integer, String> lastCommands;
     private final List<CountsByFloorByDirection> waitingList;
     private final List<CountsByFloorByDirection> stopList;
+    private final List<User> usersInStrangeTravelingState;
     private final String lastResetCause;
     private final ElevatorContext lastResetContext;
     private final List<User> users;
