@@ -45,6 +45,7 @@ public class ElevatorContext {
     private final List<User> usersInStrangeTravelingState;
     private final ElevatorContext lastResetContext;
     private final List<User> users;
+    private final Map<Integer, String> lastRequests;
 
 
 

@@ -32,6 +32,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
 
     public static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new GuavaModule());
     public static final int LAST_COMMANDS_QUEUE_SIZE = 10;
+    public static final int LAST_REQUESTS_QUEUE_SIZE = 100;
     public static final int DEFAULT_LOWER_FLOOR = 0;
     public static final int LAST_RESET_QUEUE_SIZE = 10;
     public static final int DEFAULT_HIGHER_FLOOR = 5;
@@ -40,6 +41,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
     public static final String STOP_LIST = "stopList";
     protected Map<Integer, String> lastCommands = initLastCommandQueue();
     protected Map<Integer, ElevatorContext> lastResets = initLastResetQueue();
+    protected Map<Integer, String> lastRequests = initLastRequestsQueue();
     private Score score;
     private AtomicInteger ticks = new AtomicInteger(0);
     @Getter
@@ -74,6 +76,15 @@ public class S03E01W2Elevator implements ElevatorEngine {
         };
     }
 
+    public static Map<Integer, String> initLastRequestsQueue() {
+        return new LinkedHashMap<Integer, String>() {
+            @Override
+            protected boolean removeEldestEntry(Map.Entry<Integer, String> eldest) {
+                return this.size() > LAST_REQUESTS_QUEUE_SIZE;
+            }
+        };
+    }
+
     public static Map<Integer, ElevatorContext> initLastResetQueue() {
         return new LinkedHashMap<Integer, ElevatorContext>() {
             @Override
@@ -101,14 +112,17 @@ public class S03E01W2Elevator implements ElevatorEngine {
                     cause, lowerFloor, higherFloor, cabinSize);
             logCurrentState("reset, cause:" + cause);
             lastResetDateTime = new DateTime(DateTimeZone.UTC).toString(ISODateTimeFormat.dateHourMinuteSecondMillis());
-            lastResetContext = getCurrentElevatorContext("lastResetContext", false, true);
+            lastResetContext = getCurrentElevatorContext("lastResetContext", false, true, true);
             lastResetTick = ticks.get();
             lastResets.put(ticks.get(), lastResetContext);
             lastResetCause = cause;
         }
+        lastRequests.put(ticks.get(),
+                "reset?cause=" + cause + "&lowerFloor=" + lowerFloor + "&higherFloor=" + higherFloor + "&cabinSize=" + cabinSize);
         score = new Score(lowerFloor, higherFloor);
         lastCommands = initLastCommandQueue();
         lastResets = initLastResetQueue();
+        lastRequests = initLastRequestsQueue();
         this.lowerFloor = lowerFloor;
         this.higherFloor = higherFloor;
         this.cabinSize = cabinSize;
@@ -126,6 +140,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
     @Override
     public Command nextCommand() {
         ticks.incrementAndGet();
+        lastRequests.put(ticks.get(), "nextCommand");
         updateUserState();
         tickForUsers();
         logCurrentState("nextCommand(before processing), previousCommand: <" + previousCommand + ">");
@@ -158,6 +173,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
     }
 
     public ElevatorEngine call(Integer atFloor, Direction to) {
+        lastRequests.put(ticks.get(), "call?atFloor=" + atFloor + "&to=" + to);
         checkFloorValue(atFloor);
         checkNotNull(to, "'to' cannot be null");
         S03E01W2Elevator.log.info("call(atFloor:{}, to:{})", atFloor, to);
@@ -166,6 +182,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
     }
 
     public ElevatorEngine go(Integer floorToGo) {
+        lastRequests.put(ticks.get(), "go?floorToGo=" + floorToGo);
         S03E01W2Elevator.log.info("go(floorToGo:{})", floorToGo);
         checkFloorValue(floorToGo);
         userRequestedAStopFor(floorToGo);
@@ -173,6 +190,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
     }
 
     public ElevatorEngine userHasEntered(User user) {
+        lastRequests.put(ticks.get(), "userHasEntered");
         logCurrentState("userHasEntered(" + user + ")-before");
         currentNbOfUsersInsideTheElevator.incrementAndGet();
 /*        synchronized (userWaitingByFloor) {
@@ -193,6 +211,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
     }
 
     public ElevatorEngine userHasExited(User user) {
+        lastRequests.put(ticks.get(), "userHasExited");
         logCurrentState("userHasExited(" + user + ")-before");
         currentNbOfUsersInsideTheElevator.decrementAndGet();
 /*        synchronized (stopRequestedByFloor) {
@@ -212,7 +231,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
 
     public String getState() {
         String jsonState = "UNDEF";
-        ElevatorContext context = getCurrentElevatorContext("stateRequest", true, true);
+        ElevatorContext context = getCurrentElevatorContext("stateRequest", true, true, true);
         try {
             jsonState = MAPPER.writeValueAsString(context);
         } catch (JsonProcessingException e) {
@@ -632,7 +651,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
 
     @VisibleForTesting
     protected void logCurrentState(String from) {
-        ElevatorContext context = getCurrentElevatorContext(from, false, false);
+        ElevatorContext context = getCurrentElevatorContext(from, false, false, false);
         String contextAsJsonString;
         try {
             contextAsJsonString = MAPPER.writeValueAsString(context);
@@ -671,7 +690,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
     }
 
     private ElevatorContext getCurrentElevatorContext(String caller, boolean includeLastResetContext,
-                                                      boolean includeFullUserList) {
+                                                      boolean includeFullUserList, boolean includeLastRequests) {
         Map<String, List<CountsByFloorByDirection>> aggregatedUserInfo = aggregateUserInfos();
         ElevatorContext.ElevatorContextBuilder builder = ElevatorContext.builder()
                 .caller(caller)
@@ -701,6 +720,9 @@ public class S03E01W2Elevator implements ElevatorEngine {
                 .lastResetCause(lastResetCause)
                 .lastResetDateTime(lastResetDateTime)
                 .lastResetTick(lastResetTick);
+        if (includeLastRequests) {
+            builder.lastRequests(lastRequests);
+        }
 
         if (includeFullUserList) {
             builder.users(users);
