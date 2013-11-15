@@ -20,6 +20,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.ISODateTimeFormat;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,6 +69,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
     private int middleFloor;
     private int cabinSize;
     private String lastResetCause;
+    private String lastResetDateTime;
     private ElevatorContext lastResetContext;
 
 
@@ -108,11 +112,12 @@ public class S03E01W2Elevator implements ElevatorEngine {
             S03E01W2Elevator.log.warn("RESET, cause: <{}>, lowerFloor: <{}>, higherFloor: <{}>, cabinSize: <{}>",
                     cause, lowerFloor, higherFloor, cabinSize);
             logCurrentState("reset, cause:" + cause);
+            lastResetDateTime = new DateTime(DateTimeZone.UTC).toString(ISODateTimeFormat.dateHourMinuteSecondMillis());
             lastResetContext = getCurrentElevatorContext("lastResetContext", false, true);
             lastResets.put(ticks.get(), lastResetContext);
             lastResetCause = cause;
         }
-        score = new Score(lowerFloor,higherFloor);
+        score = new Score(lowerFloor, higherFloor);
         lastCommands = initLastCommandQueue();
         lastResets = initLastResetQueue();
         this.lowerFloor = lowerFloor;
@@ -668,7 +673,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
         List<User> weirdUsers = new ArrayList<>();
         synchronized (users) {
             for (User user : users) {
-                if( user.traveling() && user.didNotRequestedAStopYet()) {
+                if (user.traveling() && user.didNotRequestedAStopYet()) {
                     weirdUsers.add(user);
                 }
             }
@@ -682,6 +687,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
         ElevatorContext.ElevatorContextBuilder builder = ElevatorContext.builder()
                 .caller(caller)
                 .score(score.getScore())
+                .date(new DateTime(DateTimeZone.UTC).toString(ISODateTimeFormat.dateHourMinuteSecondMillis()))
                 .tick(ticks.get())
                 .lowerFloor(lowerFloor)
                 .higherFloor(higherFloor)
