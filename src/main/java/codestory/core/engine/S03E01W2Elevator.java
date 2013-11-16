@@ -32,7 +32,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
 
     public static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new GuavaModule());
     public static final int LAST_COMMANDS_QUEUE_SIZE = 10;
-    public static final int LAST_REQUESTS_QUEUE_SIZE = 100;
+    public static final int LAST_REQUESTS_QUEUE_SIZE = 200;
     public static final int DEFAULT_LOWER_FLOOR = 0;
     public static final int LAST_RESET_QUEUE_SIZE = 10;
     public static final int DEFAULT_HIGHER_FLOOR = 5;
@@ -44,6 +44,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
     protected Map<Integer, String> lastRequests = initLastRequestsQueue();
     private Score score;
     private AtomicInteger ticks = new AtomicInteger(0);
+    private AtomicInteger nbRequests = new AtomicInteger(0);
     @Getter
     private Integer lowerFloor = new Integer(0);
     @Getter
@@ -140,7 +141,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
     @Override
     public Command nextCommand() {
         ticks.incrementAndGet();
-        lastRequests.put(ticks.get(), "nextCommand");
+        lastRequests.put(nbRequests.incrementAndGet(), ticks.get()+":nextCommand");
         updateUserState();
         tickForUsers();
         logCurrentState("nextCommand(before processing), previousCommand: <" + previousCommand + ">");
@@ -173,7 +174,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
     }
 
     public ElevatorEngine call(Integer atFloor, Direction to) {
-        lastRequests.put(ticks.get(), "call?atFloor=" + atFloor + "&to=" + to);
+        lastRequests.put(nbRequests.incrementAndGet(), ticks.get()+":call?atFloor=" + atFloor + "&to=" + to);
         checkFloorValue(atFloor);
         checkNotNull(to, "'to' cannot be null");
         S03E01W2Elevator.log.info("call(atFloor:{}, to:{})", atFloor, to);
@@ -182,7 +183,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
     }
 
     public ElevatorEngine go(Integer floorToGo) {
-        lastRequests.put(ticks.get(), "go?floorToGo=" + floorToGo);
+        lastRequests.put(nbRequests.incrementAndGet(), ticks.get()+":go?floorToGo=" + floorToGo);
         S03E01W2Elevator.log.info("go(floorToGo:{})", floorToGo);
         checkFloorValue(floorToGo);
         userRequestedAStopFor(floorToGo);
@@ -190,7 +191,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
     }
 
     public ElevatorEngine userHasEntered(User user) {
-        lastRequests.put(ticks.get(), "userHasEntered");
+        lastRequests.put(nbRequests.incrementAndGet(), ticks.get()+":userHasEntered");
         logCurrentState("userHasEntered(" + user + ")-before");
         currentNbOfUsersInsideTheElevator.incrementAndGet();
 /*        synchronized (userWaitingByFloor) {
@@ -211,7 +212,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
     }
 
     public ElevatorEngine userHasExited(User user) {
-        lastRequests.put(ticks.get(), "userHasExited");
+        lastRequests.put(nbRequests.incrementAndGet(), ticks.get()+":userHasExited");
         logCurrentState("userHasExited(" + user + ")-before");
         currentNbOfUsersInsideTheElevator.decrementAndGet();
 /*        synchronized (stopRequestedByFloor) {
@@ -697,6 +698,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
                 .score(score.getScore())
                 .date(new DateTime(DateTimeZone.UTC).toString(ISODateTimeFormat.dateHourMinuteSecondMillis()))
                 .tick(ticks.get())
+                .lastRequestNumber(nbRequests.get())
                 .lowerFloor(lowerFloor)
                 .higherFloor(higherFloor)
                 .cabinSize(cabinSize)

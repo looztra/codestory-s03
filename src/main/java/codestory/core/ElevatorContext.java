@@ -22,6 +22,7 @@ public class ElevatorContext {
     private final int lastResetTick;
     private final int score;
     private final int tick;
+    private final int lastRequestNumber;
     private final int lowerFloor;
     private final int higherFloor;
     private final int currentFloor;
