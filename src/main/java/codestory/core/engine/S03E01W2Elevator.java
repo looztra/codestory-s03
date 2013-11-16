@@ -32,7 +32,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class S03E01W2Elevator implements ElevatorEngine {
 
     public static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new GuavaModule());
-    public static final int LAST_COMMANDS_QUEUE_SIZE = 10;
+    public static final int LAST_COMMANDS_QUEUE_SIZE = 200;
     public static final int LAST_REQUESTS_QUEUE_SIZE = 200;
     public static final int DEFAULT_LOWER_FLOOR = 0;
     public static final int LAST_RESET_QUEUE_SIZE = 10;
@@ -119,8 +119,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
             lastResets.put(ticks.get(), lastResetContext);
             lastResetCause = cause;
         }
-        lastRequests.put(ticks.get(),
-                "reset?cause=" + cause + "&lowerFloor=" + lowerFloor + "&higherFloor=" + higherFloor + "&cabinSize=" + cabinSize);
+        lastRequests.put(nbRequests.incrementAndGet(), ticks.get() + ":reset?cause=" + cause + "&lowerFloor=" + lowerFloor + "&higherFloor=" + higherFloor + "&cabinSize=" + cabinSize);
         score = new Score(lowerFloor, higherFloor);
         lastCommands = initLastCommandQueue();
         lastResets = initLastResetQueue();

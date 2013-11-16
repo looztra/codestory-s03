@@ -1,0 +1,394 @@
+{"caller": "stateRequest", "date": "2013-11-16T17:55:53.786", "lastResetCause": "can't go down because current floor is the lowest floor", "lastResetDateTime": "2013-11-16T17:43:55.161", "lastResetTick": 57, "score": 145, "tick": 201, "lastRequestNumber": 260, "lowerFloor": -3, "higherFloor": 25, "currentFloor": 10, "previousFloor": 9, "middleFloor": 11, "currentNbOfUsersInsideTheElevator": 1, "cabinSize": 42, "currentDoorStatus": "CLOSE", "previousCommand": "UP", "previousDirection": null, "currentDirection": "UP", "someoneIsWaitingAtLowerLevels": false, "someoneIsWaitingAtUpperLevels": true, "someoneRequestedAStopAtLowerLevels": false, "someoneRequestedAStopAtUpperLevels": true, "userWaitingAtCurrentFloor": false, "userInsideElevatorNeedToGetOut": false, "lastCommands": {
+    "192": "1:UP",
+    "193": "2:UP",
+    "194": "3:UP",
+    "195": "4:UP",
+    "196": "5:UP",
+    "197": "6:UP",
+    "198": "7:UP",
+    "199": "8:UP",
+    "200": "9:UP",
+    "201": "10:UP"
+}, "waitingList": [
+    {
+        "floor": 22,
+        "count": {
+            "DOWN": 1,
+            "UP": 0
+        }
+    }
+], "stopList": [
+    {
+        "floor": 19,
+        "count": {
+            "DOWN": 0,
+            "UP": 1
+        }
+    }
+], "usersInStrangeTravelingState": [], "lastResetContext": {
+    "caller": "lastResetContext",
+    "date": "2013-11-16T17:43:55.162",
+    "lastResetCause": null,
+    "lastResetDateTime": "2013-11-16T17:43:55.161",
+    "lastResetTick": 0,
+    "score": 0,
+    "tick": 57,
+    "lastRequestNumber": 72,
+    "lowerFloor": -3,
+    "higherFloor": 25,
+    "currentFloor": -3,
+    "previousFloor": -2,
+    "middleFloor": 11,
+    "currentNbOfUsersInsideTheElevator": 0,
+    "cabinSize": 42,
+    "currentDoorStatus": "CLOSE",
+    "previousCommand": "DOWN",
+    "previousDirection": null,
+    "currentDirection": "DOWN",
+    "someoneIsWaitingAtLowerLevels": false,
+    "someoneIsWaitingAtUpperLevels": true,
+    "someoneRequestedAStopAtLowerLevels": false,
+    "someoneRequestedAStopAtUpperLevels": false,
+    "userWaitingAtCurrentFloor": true,
+    "userInsideElevatorNeedToGetOut": false,
+    "lastCommands": {
+        "48": "6:DOWN",
+        "49": "5:DOWN",
+        "50": "4:DOWN",
+        "51": "3:DOWN",
+        "52": "2:DOWN",
+        "53": "1:DOWN",
+        "54": "0:DOWN",
+        "55": "-1:DOWN",
+        "56": "-2:DOWN",
+        "57": "-3:DOWN"
+    },
+    "waitingList": [
+        {
+            "floor": -3,
+            "count": {
+                "DOWN": 0,
+                "UP": 1
+            }
+        },
+        {
+            "floor": -2,
+            "count": {
+                "DOWN": 0,
+                "UP": 1
+            }
+        },
+        {
+            "floor": 0,
+            "count": {
+                "DOWN": 0,
+                "UP": 1
+            }
+        },
+        {
+            "floor": 2,
+            "count": {
+                "DOWN": 0,
+                "UP": 1
+            }
+        },
+        {
+            "floor": 3,
+            "count": {
+                "DOWN": 0,
+                "UP": 2
+            }
+        },
+        {
+            "floor": 7,
+            "count": {
+                "DOWN": 0,
+                "UP": 2
+            }
+        },
+        {
+            "floor": 23,
+            "count": {
+                "DOWN": 2,
+                "UP": 0
+            }
+        },
+        {
+            "floor": 24,
+            "count": {
+                "DOWN": 1,
+                "UP": 0
+            }
+        }
+    ],
+    "stopList": [],
+    "usersInStrangeTravelingState": [
+        {
+            "initialFloor": 20,
+            "direction": "DOWN",
+            "floorToGo": -2147483648,
+            "currentFloor": -2,
+            "tickToGo": 26,
+            "state": "TRAVELLING",
+            "tickToWait": 29,
+            "travelingTick": 31
+        },
+        {
+            "initialFloor": 7,
+            "direction": "UP",
+            "floorToGo": -2147483648,
+            "currentFloor": -2,
+            "tickToGo": 49,
+            "state": "TRAVELLING",
+            "tickToWait": 2,
+            "travelingTick": 8
+        },
+        {
+            "initialFloor": 23,
+            "direction": "DOWN",
+            "floorToGo": -2147483648,
+            "currentFloor": -2,
+            "tickToGo": 31,
+            "state": "TRAVELLING",
+            "tickToWait": 12,
+            "travelingTick": 26
+        },
+        {
+            "initialFloor": 18,
+            "direction": "DOWN",
+            "floorToGo": -2147483648,
+            "currentFloor": -2,
+            "tickToGo": 22,
+            "state": "TRAVELLING",
+            "tickToWait": 14,
+            "travelingTick": 35
+        }
+    ],
+    "lastResetContext": null,
+    "users": [
+        {
+            "initialFloor": 20,
+            "direction": "DOWN",
+            "floorToGo": -2147483648,
+            "currentFloor": -2,
+            "tickToGo": 26,
+            "state": "TRAVELLING",
+            "tickToWait": 29,
+            "travelingTick": 31
+        },
+        {
+            "initialFloor": -3,
+            "direction": "UP",
+            "floorToGo": -2147483648,
+            "currentFloor": -2,
+            "tickToGo": 0,
+            "state": "WAITING",
+            "tickToWait": 51,
+            "travelingTick": -2147483648
+        },
+        {
+            "initialFloor": 7,
+            "direction": "UP",
+            "floorToGo": -2147483648,
+            "currentFloor": -2,
+            "tickToGo": 49,
+            "state": "TRAVELLING",
+            "tickToWait": 2,
+            "travelingTick": 8
+        },
+        {
+            "initialFloor": 3,
+            "direction": "UP",
+            "floorToGo": -2147483648,
+            "currentFloor": -2,
+            "tickToGo": 0,
+            "state": "WAITING",
+            "tickToWait": 49,
+            "travelingTick": -2147483648
+        },
+        {
+            "initialFloor": 23,
+            "direction": "DOWN",
+            "floorToGo": -2147483648,
+            "currentFloor": -2,
+            "tickToGo": 31,
+            "state": "TRAVELLING",
+            "tickToWait": 12,
+            "travelingTick": 26
+        },
+        {
+            "initialFloor": 18,
+            "direction": "DOWN",
+            "floorToGo": -2147483648,
+            "currentFloor": -2,
+            "tickToGo": 22,
+            "state": "TRAVELLING",
+            "tickToWait": 14,
+            "travelingTick": 35
+        },
+        {
+            "initialFloor": 23,
+            "direction": "DOWN",
+            "floorToGo": -2147483648,
+            "currentFloor": -2,
+            "tickToGo": 0,
+            "state": "WAITING",
+            "tickToWait": 24,
+            "travelingTick": -2147483648
+        },
+        {
+            "initialFloor": 7,
+            "direction": "UP",
+            "floorToGo": -2147483648,
+            "currentFloor": -2,
+            "tickToGo": 0,
+            "state": "WAITING",
+            "tickToWait": 23,
+            "travelingTick": -2147483648
+        },
+        {
+            "initialFloor": 23,
+            "direction": "DOWN",
+            "floorToGo": -2147483648,
+            "currentFloor": -2,
+            "tickToGo": 0,
+            "state": "WAITING",
+            "tickToWait": 21,
+            "travelingTick": -2147483648
+        },
+        {
+            "initialFloor": 3,
+            "direction": "UP",
+            "floorToGo": -2147483648,
+            "currentFloor": -2,
+            "tickToGo": 0,
+            "state": "WAITING",
+            "tickToWait": 20,
+            "travelingTick": -2147483648
+        },
+        {
+            "initialFloor": 7,
+            "direction": "UP",
+            "floorToGo": -2147483648,
+            "currentFloor": -2,
+            "tickToGo": 0,
+            "state": "WAITING",
+            "tickToWait": 13,
+            "travelingTick": -2147483648
+        },
+        {
+            "initialFloor": 24,
+            "direction": "DOWN",
+            "floorToGo": -2147483648,
+            "currentFloor": -2,
+            "tickToGo": 0,
+            "state": "WAITING",
+            "tickToWait": 12,
+            "travelingTick": -2147483648
+        },
+        {
+            "initialFloor": -2,
+            "direction": "UP",
+            "floorToGo": -2147483648,
+            "currentFloor": -2,
+            "tickToGo": 0,
+            "state": "WAITING",
+            "tickToWait": 8,
+            "travelingTick": -2147483648
+        },
+        {
+            "initialFloor": 0,
+            "direction": "UP",
+            "floorToGo": -2147483648,
+            "currentFloor": -2,
+            "tickToGo": 0,
+            "state": "WAITING",
+            "tickToWait": 8,
+            "travelingTick": -2147483648
+        },
+        {
+            "initialFloor": 2,
+            "direction": "UP",
+            "floorToGo": -2147483648,
+            "currentFloor": -2,
+            "tickToGo": 0,
+            "state": "WAITING",
+            "tickToWait": 7,
+            "travelingTick": -2147483648
+        }
+    ],
+    "lastRequests": {
+        "1": "1:nextCommand",
+        "2": "2:nextCommand",
+        "3": "2:call?atFloor=20&to=DOWN",
+        "4": "3:nextCommand",
+        "5": "4:nextCommand",
+        "6": "5:nextCommand",
+        "7": "6:nextCommand",
+        "8": "6:call?atFloor=-3&to=UP",
+        "9": "6:call?atFloor=7&to=UP",
+        "10": "7:nextCommand",
+        "11": "8:nextCommand",
+        "12": "8:call?atFloor=3&to=UP",
+        "13": "9:nextCommand",
+        "14": "10:nextCommand",
+        "15": "11:nextCommand",
+        "16": "12:nextCommand",
+        "17": "13:nextCommand",
+        "18": "14:nextCommand",
+        "19": "14:call?atFloor=23&to=DOWN",
+        "20": "15:nextCommand",
+        "21": "16:nextCommand",
+        "22": "17:nextCommand",
+        "23": "18:nextCommand",
+        "24": "19:nextCommand",
+        "25": "20:nextCommand",
+        "26": "21:nextCommand",
+        "27": "21:call?atFloor=18&to=DOWN",
+        "28": "22:nextCommand",
+        "29": "23:nextCommand",
+        "30": "24:nextCommand",
+        "31": "25:nextCommand",
+        "32": "26:nextCommand",
+        "33": "27:nextCommand",
+        "34": "28:nextCommand",
+        "35": "29:nextCommand",
+        "36": "30:nextCommand",
+        "37": "31:nextCommand",
+        "38": "32:nextCommand",
+        "39": "33:nextCommand",
+        "40": "33:call?atFloor=23&to=DOWN",
+        "41": "34:nextCommand",
+        "42": "34:call?atFloor=7&to=UP",
+        "43": "35:nextCommand",
+        "44": "36:nextCommand",
+        "45": "36:call?atFloor=23&to=DOWN",
+        "46": "37:nextCommand",
+        "47": "37:call?atFloor=3&to=UP",
+        "48": "38:nextCommand",
+        "49": "39:nextCommand",
+        "50": "40:nextCommand",
+        "51": "41:nextCommand",
+        "52": "42:nextCommand",
+        "53": "43:nextCommand",
+        "54": "44:nextCommand",
+        "55": "44:call?atFloor=7&to=UP",
+        "56": "45:nextCommand",
+        "57": "reset?cause=can't go down because current floor is the lowest floor&lowerFloor=-3&higherFloor=25&cabinSize=42",
+        "58": "46:nextCommand",
+        "59": "47:nextCommand",
+        "60": "48:nextCommand",
+        "61": "49:nextCommand",
+        "62": "49:call?atFloor=-2&to=UP",
+        "63": "49:call?atFloor=0&to=UP",
+        "64": "50:nextCommand",
+        "65": "50:call?atFloor=2&to=UP",
+        "66": "51:nextCommand",
+        "67": "52:nextCommand",
+        "68": "53:nextCommand",
+        "69": "54:nextCommand",
+        "70": "55:nextCommand",
+        "71": "56:nextCommand",
+        "72": "57:nextCommand"
+    }
+}, "users": null, "lastRequests": null}
