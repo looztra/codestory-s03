@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Optional;
 import com.google.common.collect.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -141,7 +142,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
     @Override
     public Command nextCommand() {
         ticks.incrementAndGet();
-        lastRequests.put(nbRequests.incrementAndGet(), ticks.get()+":nextCommand");
+        lastRequests.put(nbRequests.incrementAndGet(), ticks.get() + ":nextCommand");
         updateUserState();
         tickForUsers();
         logCurrentState("nextCommand(before processing), previousCommand: <" + previousCommand + ">");
@@ -174,7 +175,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
     }
 
     public ElevatorEngine call(Integer atFloor, Direction to) {
-        lastRequests.put(nbRequests.incrementAndGet(), ticks.get()+":call?atFloor=" + atFloor + "&to=" + to);
+        lastRequests.put(nbRequests.incrementAndGet(), ticks.get() + ":call?atFloor=" + atFloor + "&to=" + to);
         checkFloorValue(atFloor);
         checkNotNull(to, "'to' cannot be null");
         S03E01W2Elevator.log.info("call(atFloor:{}, to:{})", atFloor, to);
@@ -183,7 +184,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
     }
 
     public ElevatorEngine go(Integer floorToGo) {
-        lastRequests.put(nbRequests.incrementAndGet(), ticks.get()+":go?floorToGo=" + floorToGo);
+        lastRequests.put(nbRequests.incrementAndGet(), ticks.get() + ":go?floorToGo=" + floorToGo);
         S03E01W2Elevator.log.info("go(floorToGo:{})", floorToGo);
         checkFloorValue(floorToGo);
         userRequestedAStopFor(floorToGo);
@@ -191,7 +192,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
     }
 
     public ElevatorEngine userHasEntered(User user) {
-        lastRequests.put(nbRequests.incrementAndGet(), ticks.get()+":userHasEntered");
+        lastRequests.put(nbRequests.incrementAndGet(), ticks.get() + ":userHasEntered");
         logCurrentState("userHasEntered(" + user + ")-before");
         currentNbOfUsersInsideTheElevator.incrementAndGet();
 /*        synchronized (userWaitingByFloor) {
@@ -212,7 +213,7 @@ public class S03E01W2Elevator implements ElevatorEngine {
     }
 
     public ElevatorEngine userHasExited(User user) {
-        lastRequests.put(nbRequests.incrementAndGet(), ticks.get()+":userHasExited");
+        lastRequests.put(nbRequests.incrementAndGet(), ticks.get() + ":userHasExited");
         logCurrentState("userHasExited(" + user + ")-before");
         currentNbOfUsersInsideTheElevator.decrementAndGet();
 /*        synchronized (stopRequestedByFloor) {
@@ -230,9 +231,11 @@ public class S03E01W2Elevator implements ElevatorEngine {
         return this;
     }
 
-    public String getState() {
+    public String getState(Optional<Boolean> oIncludeFullUserList, Optional<Boolean> oIncludeLastRequests) {
         String jsonState = "UNDEF";
-        ElevatorContext context = getCurrentElevatorContext("stateRequest", true, true, true);
+        boolean includefullUserList = oIncludeFullUserList.isPresent() ? oIncludeFullUserList.get() : false;
+        boolean includelastRequests = oIncludeLastRequests.isPresent() ? oIncludeLastRequests.get() : false;
+        ElevatorContext context = getCurrentElevatorContext("stateRequest", true, includefullUserList, includelastRequests);
         try {
             jsonState = MAPPER.writeValueAsString(context);
         } catch (JsonProcessingException e) {

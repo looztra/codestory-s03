@@ -7,6 +7,7 @@ import codestory.core.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Optional;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
@@ -182,7 +183,7 @@ public class S03E01W1Elevator implements ElevatorEngine {
         return this;
     }
 
-    public String getState() {
+    public String getState(Optional<Boolean> oIncludeFullUserList, Optional<Boolean> oIncludeLastRequests) {
         return "not implemented";
     }
 

@@ -2,6 +2,7 @@ package codestory.resources;
 
 import codestory.core.Direction;
 import codestory.core.engine.ElevatorEngine;
+import com.google.common.base.Optional;
 import com.google.inject.Inject;
 
 import javax.ws.rs.*;
@@ -25,8 +26,9 @@ public class ElevatorResource {
     }
 
     @GET
-    public String getState() {
-        return elevatorEngine.getState();
+    public String getState(@QueryParam("includeFullUserList")Optional<Boolean> includeFullUserList,
+                           @QueryParam("includeLastRequests") Optional<Boolean> includeLastRequests) {
+        return elevatorEngine.getState(includeFullUserList,includeLastRequests);
     }
 
     @Path("call")

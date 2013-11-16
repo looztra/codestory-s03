@@ -4,6 +4,7 @@ import codestory.core.Command;
 import codestory.core.Direction;
 import codestory.core.User;
 import codestory.core.exception.ElevatorIsBrokenException;
+import com.google.common.base.Optional;
 
 public interface ElevatorEngine {
 
@@ -28,6 +29,6 @@ public interface ElevatorEngine {
 
     public Integer getHigherFloor();
 
-    public String getState();
+    public String getState(Optional<Boolean> oIncludeFullUserList, Optional<Boolean> oIncludeLastRequests);
 
 }
